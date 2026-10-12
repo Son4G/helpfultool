@@ -2219,15 +2219,22 @@ html.touch .pe-del.pe-edit { right: auto; left: -15px; }
 
 /* ----------------------------- barra delle raccolte ----------------------------- */
 .hub-bar { position: sticky; top: var(--topbar-h); z-index: calc(var(--z-sticky) - 1); background: var(--surface); border-bottom: 1px solid var(--line); }
-.hub-in { max-width: 1080px; margin: 0 auto; padding: 0 24px; display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; }
-.hub-in::-webkit-scrollbar { display: none; }
-.hub-tab { display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 14px; color: var(--ink-2); text-decoration: none; font-size: var(--fs-sm); font-weight: 500; white-space: nowrap; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color var(--t-fast) var(--ease), border-color var(--t-fast) var(--ease); }
+.hub-in { max-width: 1080px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; gap: 8px; }
+.hub-tabs { flex: 1; min-width: 0; display: flex; gap: 4px; }
+.hub-tabs::-webkit-scrollbar { display: none; }
+.hub-star { flex: none; width: 44px; height: 44px; display: grid; place-items: center; border: 0; border-radius: var(--pill); background: transparent; color: var(--ink-3); transition: background var(--t-fast) var(--ease), color var(--t-fast) var(--ease); }
+.hub-star .i { width: 19px; height: 19px; }
+.hub-star:hover { background: var(--surface-3); color: var(--ink); }
+.hub-star.on { color: var(--g-util); }
+.hub-star.on .i { fill: currentColor; }
+.hub-star:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
+.hub-tab { display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 14px; color: var(--ink-2); text-decoration: none; font-size: var(--fs-sm); font-weight: 500; white-space: nowrap; box-shadow: inset 0 -2px 0 transparent; transition: color var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease); }
 .hub-tab .i { width: 17px; height: 17px; color: var(--ink-3); }
 .hub-tab:hover { color: var(--ink); }
-.hub-tab[aria-current="page"] { color: var(--ink); font-weight: 600; border-bottom-color: var(--g, var(--accent)); }
+.hub-tab[aria-current="page"] { color: var(--ink); font-weight: 600; box-shadow: inset 0 -2px 0 var(--g, var(--accent)); }
 .hub-tab[aria-current="page"] .i { color: var(--g, var(--accent-text)); }
 .hub-tab:focus-visible { outline: 2px solid var(--focus); outline-offset: -4px; border-radius: var(--r); }
-@media (max-width: 640px) { .hub-in { padding: 0 8px; } .hub-tab { padding: 0 12px; min-height: 46px; } }
+@media (max-width: 640px) { .hub-in { padding: 0 0 0 8px; gap: 2px; } .hub-tab { padding: 0 12px; min-height: 46px; } }
 
 /* ----------------------------- PDF: avvio ----------------------------- */
 .pw-empty .drop-zone { min-height: 220px; }
@@ -2253,10 +2260,10 @@ html.touch .pe-del.pe-edit { right: auto; left: -15px; }
 .pw-tabbar { position: sticky; top: var(--topbar-h); z-index: calc(var(--z-sticky) - 1); display: flex; align-items: center; gap: 12px; height: 54px; margin: 0 -24px; padding: 0 24px; background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
 .pw-tabs { display: flex; gap: 2px; min-width: 0; height: 100%; overflow-x: auto; scrollbar-width: none; flex: 1; }
 .pw-tabs::-webkit-scrollbar { display: none; }
-.pw-tab { display: inline-flex; align-items: center; gap: 8px; height: 100%; padding: 0 14px; border: 0; border-bottom: 2px solid transparent; background: none; color: var(--ink-2); font-size: var(--fs-sm); font-weight: 500; white-space: nowrap; margin-bottom: -1px; transition: color var(--t-fast) var(--ease), border-color var(--t-fast) var(--ease); }
+.pw-tab { display: inline-flex; align-items: center; gap: 8px; height: 100%; padding: 0 14px; border: 0; box-shadow: inset 0 -2px 0 transparent; background: none; color: var(--ink-2); font-size: var(--fs-sm); font-weight: 500; white-space: nowrap; transition: color var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease); }
 .pw-tab .i { width: 17px; height: 17px; color: var(--ink-3); }
 .pw-tab:hover { color: var(--ink); }
-.pw-tab[aria-selected="true"] { color: var(--ink); font-weight: 600; border-bottom-color: var(--accent); }
+.pw-tab[aria-selected="true"] { color: var(--ink); font-weight: 600; box-shadow: inset 0 -2px 0 var(--accent); }
 .pw-tab[aria-selected="true"] .i { color: var(--accent-text); }
 .pw-tab:focus-visible { outline: 2px solid var(--focus); outline-offset: -6px; border-radius: var(--r); }
 .pw-actions { display: flex; align-items: center; gap: 4px; flex: none; }
@@ -2487,6 +2494,16 @@ html:has(.pw-tabbar) { scroll-padding-top: calc(var(--topbar-h) + 70px); }
   .pw-log { min-height: 0; padding: 6px 0 0; }
 }
 @media (pointer: coarse) { .pw-sw { width: 34px; height: 34px; } .pw-swatches { gap: 10px; } }
+
+/* strisce che scorrono di lato: solo a destra e sinistra, mai in su o in giù */
+.hub-tabs, .pw-tabs, .pw-rail { overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+@media (max-width: 860px) { .pw-quick { overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain; } }
+/* più forte di «html.touch *» (niente zoom della pagina): anche pan-x da solo impedisce lo zoom */
+.hub-tabs, .pw-tabs, html.touch .hub-tabs, html.touch .hub-tabs *, html.touch .pw-tabs, html.touch .pw-tabs * { touch-action: pan-x; }
+@media (max-width: 860px) { .pw-rail, .pw-quick, html.touch .pw-rail, html.touch .pw-rail *, html.touch .pw-quick, html.touch .pw-quick * { touch-action: pan-x; } }
+@media (min-width: 1181px) { .pw-rail, html.touch .pw-rail { overflow-x: hidden; overflow-y: auto; touch-action: pan-x pan-y; overscroll-behavior: contain; } }
+/* sul telefono la striscia sfuma a destra: si capisce che continua */
+@media (max-width: 640px) { .hub-tabs { -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent); mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent); padding-right: 20px; } }
 
 </style>
 </head>
@@ -21347,7 +21364,10 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
   };
 
   /* Da HelpfulTool 3.0: recenti e preferiti degli strumenti confluiti nel PDF o raccolti in un riquadro. */
+  /* Una volta sola: da 3.1 anche una singola sezione (es. Prontuario reti) può essere un preferito. */
   ready(() => {
+    if (store.get('ht-migr3')) return;
+    store.set('ht-migr3', '1');
     const map = (id) => (ALIAS[id] ? ALIAS[id].split('/')[0] : HUB_OF.has(id) ? HUB_OF.get(id).id : id);
     const pinList = store.json('ht-pins', []);
     const nextPins = [...new Set(pinList.map(map))];
@@ -21365,10 +21385,31 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
     store.set('ht-hub-' + hb.id, t.id);
     bar.className = 'hub-bar g-' + hb.group;
     bar.setAttribute('aria-label', hb.title);
-    bar.replaceChildren(h('div', { class: 'hub-in' }, hb.tabs.map(([id, label]) => {
+    /* le sezioni scorrono solo a destra e sinistra; la stella resta ferma in fondo e vale per la sezione aperta */
+    const strip = h('div', { class: 'hub-tabs' }, hb.tabs.map(([id, label]) => {
       const c = tools.get(id);
       return c ? h('a', { href: '#/' + id, class: 'hub-tab', 'aria-current': id === t.id ? 'page' : null }, icon(c.icon), h('span', null, label)) : null;
-    })));
+    }));
+    const star = h('button', { type: 'button', class: 'hub-star' });
+    const syncStar = () => {
+      const on = pins.has(t.id);
+      star.classList.toggle('on', on);
+      star.setAttribute('aria-pressed', on ? 'true' : 'false');
+      const l = on ? `Togli «${t.title}» dai preferiti` : `Aggiungi «${t.title}» ai preferiti`;
+      star.setAttribute('aria-label', l);
+      star.title = l;
+    };
+    star.append(icon('star'));
+    star.addEventListener('click', () => {
+      pins.toggle(t.id);
+      syncStar();
+      toast(pins.has(t.id) ? `«${t.title}» è tra i preferiti del menu.` : `«${t.title}» tolto dai preferiti.`);
+    });
+    syncStar();
+    bar.replaceChildren(h('div', { class: 'hub-in' }, strip, star));
+    /* la sezione aperta resta in vista nella striscia */
+    const cur = $('.hub-tab[aria-current="page"]', strip);
+    if (cur) requestAnimationFrame(() => { const r = cur.getBoundingClientRect(), s = strip.getBoundingClientRect(); if (r.left < s.left || r.right > s.right) strip.scrollLeft += r.left - s.left - 16; });
   }
 
   let current = null;
@@ -21426,7 +21467,7 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
   function todayItems() {
     const items = [];
     for (const t of tools.values()) if (t.today) for (const it of safe(() => t.today(), []) || []) items.push({ icon: t.icon, group: t.group, ...it });
-    const hasData = store.keys().some((k) => !/^ht-(theme|recent|pins|seen|lastBackup|backupSnooze)/.test(k));
+    const hasData = store.keys().some((k) => !/^ht-(theme|recent|pins|seen|lastBackup|backupSnooze|migr3|hub-)/.test(k));
     const last = store.get('ht-lastBackup');
     const snooze = Number(store.get('ht-backupSnooze') || 0);
     const age = last ? Math.floor((Date.now() - new Date(last).getTime()) / DAY) : null;
@@ -21447,7 +21488,8 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
       h('span', { class: 'tile-txt' },
         h('span', { class: 'tile-t' }, t.title),
         /* una raccolta dice subito cosa contiene */
-        t.tabs ? h('span', { class: 'tile-sub', 'aria-hidden': 'true' }, t.tabs.map((x) => x[1]).join(' · ')) : null,
+        t.tabs ? h('span', { class: 'tile-sub', 'aria-hidden': 'true' }, t.tabs.map((x) => x[1]).join(' · '))
+          : t.hub && hubs.has(t.hub) ? h('span', { class: 'tile-sub' }, 'in ' + hubs.get(t.hub).title) : null,
         h('span', { class: 'tile-d', id: dId }, t.desc)),
       icon('right', 'tile-go'));
     /* nella ricerca contano anche i nomi delle sezioni di una raccolta */
@@ -21684,8 +21726,10 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
   }
 
   /* ----------------------------- versione e novità ----------------------------- */
-  const VERSION = '3.0';
+  const VERSION = '3.1';
   const NEWS = [
+    ['Preferiti delle sezioni', 'Nelle raccolte (Calcolatori, Fatture e offerte, Lettere ed email, Generatori) la stella in fondo alla barra delle sezioni mette tra i preferiti solo la sezione aperta, per esempio «Prontuario reti»: nel menu compare con il suo riquadro tra i Preferiti. La stella sul riquadro della raccolta continua a valere per tutta la raccolta.'],
+    ['Strisce ferme', 'La barra delle sezioni e le altre strisce (sezioni e miniature del PDF, strumenti in basso sul telefono) scorrono solo a destra e a sinistra: i nomi non si spostano più in su o in giù.'],
     ['Menu più compatto', 'Riquadri più piccoli con solo icona e nome (la descrizione compare passandoci sopra) e strumenti affini raccolti insieme: «Fatture e offerte», «Lettere ed email», «Calcolatori» (calcolatrice, numeri, IP e sottoreti, prontuario reti) e «Generatori» (QR e password). In ogni raccolta una barra in alto porta da una sezione all\'altra.'],
     ['Un solo strumento PDF', 'Strumenti PDF, Firma PDF, Compila moduli, Testo da scansione e Anonimizza sono ora un unico strumento «PDF». Apri uno o più file (anche Word, testo e foto), lavora per sezioni (Pagine, Modifica, Firma, Moduli, Converti, Proteggi), annulla e ripeti quando vuoi e scarica una volta sola alla fine.'],
     ['PDF: novità', 'Testo, evidenziatore, sottolineato, barrato, penna, rettangoli, cerchi, frecce, note, immagini e bianchetto; testo esistente da riscrivere con un clic; ritaglio, pagine vuote e duplicate; conversione in Word, Excel, immagini e testo; password AES 256 con blocco di stampa e copia; PDF protetti aperti con la password senza perdere il testo; zone oscurate che tolgono davvero il testo; metadati; confronto con un\'altra versione in ConfrontaDoc.'],
@@ -21723,7 +21767,7 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
       const seen = store.get('ht-seenVersion');
       if (seen === VERSION) return;
       /* al primo avvio in assoluto non c'è nulla di «nuovo» da raccontare */
-      if (!seen && !store.keys().some((k) => !/^ht-(theme|recent|pins|seenVersion)/.test(k))) { store.set('ht-seenVersion', VERSION); return; }
+      if (!seen && !store.keys().some((k) => !/^ht-(theme|recent|pins|seenVersion|migr3|hub-)/.test(k))) { store.set('ht-seenVersion', VERSION); return; }
       setTimeout(() => news.show(), 400);
     }
   };
