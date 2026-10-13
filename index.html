@@ -2545,7 +2545,11 @@ html.metro-on, html.metro-on body { overflow: hidden; overscroll-behavior: none;
 .mt-top .seg span { min-width: 40px; text-align: center; }
 
 .mt-measure { margin-top: 18px; display: flex; flex-direction: column; gap: 10px; }
-.mt-measure > .seg { align-self: flex-start; }
+.mt-segs { display: flex; flex-wrap: wrap; gap: 8px 10px; }
+/* lo 0 in basso: il righello orizzontale e le sue zone passano sul bordo in basso */
+.metro.flip .mt-hit.h { top: auto; bottom: 0; }
+.metro.flip .mt-body { top: 0; bottom: var(--mt-h); padding-top: 12px; padding-bottom: 20px; }
+.metro.flip .mt-pill.h { translate: -50% -100%; }
 .mt-read-row { display: grid; grid-template-columns: 48px minmax(0, 1fr) 48px; align-items: center; gap: 8px; padding: 6px 0; }
 .mt-read { text-align: center; font: 600 clamp(34px, 10vw, 48px)/1.1 var(--font); font-variant-numeric: tabular-nums; letter-spacing: -.02em; color: var(--ink); }
 .mt-nudge { width: 48px; height: 48px; border: 1px solid var(--line-strong); border-radius: var(--r-lg); background: var(--surface); color: var(--ink); }
@@ -2581,6 +2585,8 @@ html.metro-on, html.metro-on body { overflow: hidden; overscroll-behavior: none;
 .mt-cal-p { margin-top: 0; margin-bottom: 8px; color: var(--ink-2); font-size: var(--fs-sm); line-height: 1.5; }
 .mt-phone-box { display: flex; flex-direction: column; gap: 8px; margin: 4px 0 18px; }
 .mt-phone-box .fld-l { margin: 0; }
+.mt-brand { align-self: flex-start; }
+.mt-brand span { min-width: 72px; text-align: center; }
 .mt-phone { width: 100%; min-height: 48px; font-size: var(--fs-md); }
 .mt-phone-note { margin: 0; }
 .mt-sugg { display: flex; flex-direction: column; gap: 8px; }
@@ -21857,29 +21863,11 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
   }
 
   /* ----------------------------- versione e novità ----------------------------- */
-  const VERSION = '3.3';
+  const VERSION = '3.4';
+  /* solo le novità dell'ultimo aggiornamento: le versioni precedenti restano nella storia del progetto */
   const NEWS = [
-    ['Metro: scegli il telefono', 'Per tarare il metro basta scegliere il modello del telefono: iPhone, Samsung Galaxy, Google Pixel, Xiaomi e altri, con la misura vera dello schermo. Spesso il telefono è riconosciuto da solo e basta toccare «Fatto». La carta in formato bancomat e la diagonale restano per controllare o per i modelli che non sono in elenco.'],
-    ['Metro', 'Nuovo strumento in Utilità: due righelli sui bordi dello schermo (a sinistra e in alto, con lo 0 nell\'angolo), in centimetri o millimetri. Si tara una volta con una carta in formato bancomat o con la diagonale dello schermo. Trascini il segno fino alla fine dell\'oggetto e tocchi «Aggiungi»: le misure si sommano, con un nome per ognuna, così un oggetto più lungo del telefono si misura a passi.'],
-    ['Messaggi', 'Nella versione per telefono possono arrivare avvisi dall\'autore di HelpfulTool: compaiono in cima al menu e restano nella pagina «Messaggi». L\'app li legge dal proprio sito e non invia nessun dato; il file per il computer resta del tutto offline.'],
-    ['Preferiti delle sezioni', 'Nelle raccolte (Calcolatori, Fatture e offerte, Lettere ed email, Generatori) la stella in fondo alla barra delle sezioni mette tra i preferiti solo la sezione aperta, per esempio «Prontuario reti»: nel menu compare con il suo riquadro tra i Preferiti. La stella sul riquadro della raccolta continua a valere per tutta la raccolta.'],
-    ['Strisce ferme', 'La barra delle sezioni e le altre strisce (sezioni e miniature del PDF, strumenti in basso sul telefono) scorrono solo a destra e a sinistra: i nomi non si spostano più in su o in giù.'],
-    ['Menu più compatto', 'Riquadri più piccoli con solo icona e nome (la descrizione compare passandoci sopra) e strumenti affini raccolti insieme: «Fatture e offerte», «Lettere ed email», «Calcolatori» (calcolatrice, numeri, IP e sottoreti, prontuario reti) e «Generatori» (QR e password). In ogni raccolta una barra in alto porta da una sezione all\'altra.'],
-    ['Un solo strumento PDF', 'Strumenti PDF, Firma PDF, Compila moduli, Testo da scansione e Anonimizza sono ora un unico strumento «PDF». Apri uno o più file (anche Word, testo e foto), lavora per sezioni (Pagine, Modifica, Firma, Moduli, Converti, Proteggi), annulla e ripeti quando vuoi e scarica una volta sola alla fine.'],
-    ['PDF: novità', 'Testo, evidenziatore, sottolineato, barrato, penna, rettangoli, cerchi, frecce, note, immagini e bianchetto; testo esistente da riscrivere con un clic; ritaglio, pagine vuote e duplicate; conversione in Word, Excel, immagini e testo; password AES 256 con blocco di stampa e copia; PDF protetti aperti con la password senza perdere il testo; zone oscurate che tolgono davvero il testo; metadati; confronto con un\'altra versione in ConfrontaDoc.'],
-    ['Convertitore', 'Word → PDF e testo → PDF ora si fanno aprendo il file nello strumento PDF; nel Convertitore restano Excel ↔ CSV, Word → testo e immagini.'],
-    ['Conversione numeri', 'Nuovo strumento in Utilità: scrivi in decimale, binario, esadecimale o ottale e gli altri campi si aggiornano. I bit si accendono con un tocco, larghezza da 8 a 64 bit, complemento a 2 e i passaggi del calcolo (divisioni per 2, gruppi di 4 e 3 bit).'],
-    ['Prontuario reti', 'Nuovo strumento in Utilità: porte e protocolli, modello OSI, indirizzi IPv4 speciali, classi, tabella CIDR completa, IPv6, comandi Windows, Linux e Cisco IOS da copiare, cavi e Wi-Fi. Una ricerca sola per tutto.'],
-    ['Menu', 'All\'apertura la ricerca non si attiva più da sola e chiudendo le novità non si apre la tastiera.'],
-    ['Calcolo IP e sottoreti', 'Nuovo strumento in Utilità: scegli la classe (A, B, C) e la rete, poi quante sottoreti e quanti host. Sottoreti tutte uguali (regola classica 2^n − 2) o di dimensioni diverse (VLSM), maschera in binario con i passaggi, Excel, CSV, PDF, e analisi di un singolo indirizzo.'],
-    ['Telefono', 'Spariti i suggerimenti da tastiera (Ctrl+K, Esc, frecce, Invio, doppio clic); la ricerca ha un pulsante per chiudere, le pagine dei PDF si spostano con le frecce sotto le miniature, i testi su firme e moduli si cambiano con la matita.'],
-    ['Sul telefono', 'Menu a gruppi che si aprono con un tocco, barra in basso (Menu, Oggi, Cerca, Profilo), i file prodotti si condividono direttamente (WhatsApp, Mail, File), pulsante «Scatta una foto» dove servono immagini, e lettore di codici QR con la fotocamera.'],
-    ['Menu', 'Striscia «Oggi» con scadenze, lezioni, fatture da incassare e carte da ripassare; «Continua» con le bozze; preferiti con la stella; ricerca rapida con Ctrl+K; Esc torna al menu; Ctrl+S salva.'],
-    ['Dati', 'Archivio nel database del browser (molto più spazio), spazio usato visibile nel profilo e promemoria del backup.'],
-    ['Nuovi strumenti', 'Nota spese con lettura degli scontrini, Ore lavorate (diventano righe di fattura), Dichiarazione d\'imposta Ticino, Generatore QR, Generatore password, Analisi del testo, Anonimizza documenti.'],
-    ['ConfrontaDoc', 'Confronto PDF con PDF (anche scansioni), righe e colonne da ignorare, tasti N e P per la differenza successiva o precedente.'],
-    ['Fatture e offerte', 'Stato pagata o da pagare, totale da incassare, solleciti, fatture ricorrenti, elenco annuale in Excel; offerte accettate o rifiutate con il tasso di conversione; righe più compatte.'],
-    ['Altri strumenti', 'Modelli personali per lettere ed email, CV «ATS» e controllo una pagina, attività ricorrenti e sotto-attività, compiti nell\'orario, flashcard da testo o PDF con statistiche, simulazione e grafico dei voti, import dell\'estratto conto e obiettivi di risparmio, PDF compresso, numeri di pagina, filigrana e sblocco, OCR di una zona e delle tabelle, dati di esempio negli strumenti vuoti.']
+    ['Metro: scegli il telefono', 'Per tarare il metro tocchi la marca (iPhone, Samsung o Altro) e scegli il modello: il righello prende la misura vera dello schermo. Sull\'iPhone il modello spesso è riconosciuto da solo e basta toccare «Fatto». Per gli altri telefoni scrivi la diagonale dello schermo; la carta in formato bancomat resta per controllare.'],
+    ['Metro: lo 0 in alto o in basso', 'Sotto la lettura scegli «0 in alto» o «0 in basso»: con lo 0 in basso il righello a sinistra conta dal fondo del telefono verso l\'alto e quello orizzontale passa sul bordo in basso.']
   ];
   const news = {
     show() {
@@ -34211,7 +34199,7 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
 </script>
 <script>/* metro */
 /* HelpfulTool — Metro: due righelli sui bordi dello schermo (a sinistra e in alto, con lo 0 nell'angolo),
-   tarati una volta scegliendo il modello del telefono, con una carta in formato bancomat (85,6 × 54 mm)
+   (lo 0 si può mettere anche in basso), tarati una volta scegliendo il modello del telefono, con una carta in formato bancomat (85,6 × 54 mm)
    o con la diagonale dello schermo.
    Si trascina il segno fino alla fine dell'oggetto e si aggiunge la misura all'elenco: le misure si
    sommano, così un oggetto più lungo del telefono si misura a passi. Lo schermo resta tutto per il metro. */
@@ -34227,7 +34215,7 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
   let el = null, s = null;
   let cal = null;                            // taratura in corso: { pxmm, prev }
   let parts = null;                          // nodi che cambiano durante il trascinamento
-  const fresh = () => ({ pxmm: null, sig: '', phone: '', unit: 'cm', side: 'v', pos: { v: 50, h: 30 }, list: [] });
+  const fresh = () => ({ pxmm: null, sig: '', phone: '', zero: 'top', unit: 'cm', side: 'v', pos: { v: 50, h: 30 }, list: [] });
   const load = () => {
     const x = { ...fresh(), ...(HT.store.json(KEY, {}) || {}) };
     x.pos = { ...fresh().pos, ...(x.pos || {}) };
@@ -34239,6 +34227,9 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
   const sig = () => { const a = [screen.width, screen.height].sort((x, y) => x - y); return `${a[0]}x${a[1]}@${window.devicePixelRatio || 1}`; };
   const ready = () => !!s.pxmm && s.sig === sig();
   const k = () => (cal ? cal.pxmm : s.pxmm);
+  /* «0 in basso»: il righello a sinistra conta dal basso e quello orizzontale sta sul bordo in basso (non durante la taratura) */
+  const flip = () => !cal && s.zero === 'bottom';
+  const SIDE_LABEL = () => (flip() ? { v: 'Righello a sinistra', h: 'Righello in basso' } : SIDE);
 
   const nf = [0, 1, 2].map((d) => new Intl.NumberFormat('it-CH', { minimumFractionDigits: d, maximumFractionDigits: d }));
   /* le misure sono millimetri interi */
@@ -34264,25 +34255,26 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
     svg.setAttribute('class', 'mt-svg');
     svg.setAttribute('width', W); svg.setAttribute('height', H);
     svg.setAttribute('aria-hidden', 'true');
-    const p = { mm: '', half: '', cm: '' };
+    const p = { mm: '', half: '', cm: '' }, f = flip();
+    const Y = (y) => (f ? H - y : y);
     const tick = (i) => (i % 10 === 0 ? ['cm', 24] : i % 5 === 0 ? ['half', 16] : ['mm', 9]);
     let labels = '';
     const lab = (i) => (s.unit === 'mm' ? String(i) : String(i / 10));
     for (let i = 0, n = Math.floor(H / px); i <= n; i++) {
-      const y = (i * px).toFixed(2), [c, len] = tick(i);
+      const y = Y(i * px).toFixed(2), [c, len] = tick(i);
       p[c] += `M0 ${y}h${len}`;
       /* nell'angolo comune i numeri dei due righelli si scontrerebbero: lì restano solo le tacche */
       if (c === 'cm' && i && i * px > sh + 6) labels += `<text class="mt-n" x="${len + 5}" y="${y}" dy=".35em">${lab(i)}</text>`;
     }
     for (let i = 0, n = Math.floor(W / px); i <= n; i++) {
       const x = (i * px).toFixed(2), [c, len] = tick(i);
-      p[c] += `M${x} 0v${len}`;
-      if (c === 'cm' && i && i * px > sw + 12) labels += `<text class="mt-n" x="${x}" y="${len + 14}" text-anchor="middle">${lab(i)}</text>`;
+      p[c] += f ? `M${x} ${H}v${-len}` : `M${x} 0v${len}`;
+      if (c === 'cm' && i && i * px > sw + 12) labels += `<text class="mt-n" x="${x}" y="${f ? H - len - 5 : len + 14}" text-anchor="middle">${lab(i)}</text>`;
     }
-    svg.innerHTML = `<rect class="mt-strip" x="0" y="0" width="${sw}" height="${H}"/><rect class="mt-strip" x="0" y="0" width="${W}" height="${sh}"/>`
-      + `<path class="mt-edge" d="M${sw - .5} ${sh}V${H}M${sw} ${sh - .5}H${W}"/>`
+    svg.innerHTML = `<rect class="mt-strip" x="0" y="0" width="${sw}" height="${H}"/><rect class="mt-strip" x="0" y="${f ? H - sh : 0}" width="${W}" height="${sh}"/>`
+      + `<path class="mt-edge" d="${f ? `M${sw - .5} 0V${H - sh}M${sw} ${H - sh + .5}H${W}` : `M${sw - .5} ${sh}V${H}M${sw} ${sh - .5}H${W}`}"/>`
       + `<path class="mt-t mm" d="${p.mm}"/><path class="mt-t half" d="${p.half}"/><path class="mt-t cm" d="${p.cm}"/>${labels}`
-      + `<text class="mt-unit" x="${sw / 2}" y="${sh / 2}" dy=".35em" text-anchor="middle">${s.unit}</text>`;
+      + `<text class="mt-unit" x="${sw / 2}" y="${f ? H - sh / 2 : sh / 2}" dy=".35em" text-anchor="middle">${s.unit}</text>`;
     return svg;
   }
 
@@ -34291,12 +34283,12 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
     if (!parts || cal || !geo().W) return;
     const side = s.side, px = k(), mm = clampPos(side, s.pos[side]);
     s.pos[side] = mm;
-    const at = mm * px;
+    const at = mm * px, f = flip(), H = geo().H;
     parts.line.className = 'mt-line ' + side;
-    parts.line.style.transform = side === 'v' ? `translateY(${at}px)` : `translateX(${at}px)`;
+    parts.line.style.transform = side === 'v' ? `translateY(${f ? H - at : at}px)` : `translateX(${at}px)`;
     parts.pill.className = 'mt-pill ' + side;
     parts.pill.textContent = fmt(mm);
-    parts.pill.style.transform = side === 'v' ? `translate(${parts.stripW + 10}px, ${at}px)` : `translate(${at}px, ${parts.stripH + 10}px)`;
+    parts.pill.style.transform = side === 'v' ? `translate(${parts.stripW + 10}px, ${f ? H - at : at}px)` : `translate(${at}px, ${f ? H - parts.stripH - 10 : parts.stripH + 10}px)`;
     parts.read.textContent = fmt(mm);
     parts.addBtn.lastChild.textContent = `Aggiungi ${fmt(mm)}`;
     parts.addBtn.disabled = mm <= 0;
@@ -34329,7 +34321,7 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
         drag = 'cal';
         from = { x: p.x, w: CARD_W * cal.pxmm };
       } else {
-        const inV = p.x <= parts.stripW, inH = p.y <= parts.stripH;
+        const inV = p.x <= parts.stripW, inH = flip() ? p.y >= geo().H - parts.stripH : p.y <= parts.stripH;
         if (!inV && !inH) return;
         drag = inV && inH ? s.side : inV ? 'v' : 'h';
         (drag === 'v' ? parts.sv : parts.sh).focus({ preventScroll: true });
@@ -34342,7 +34334,7 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
       if (!drag) return;
       const p = at(e);
       if (drag === 'cal') adjust((from.w + p.x - from.x) / CARD_W);
-      else setPos(drag, (drag === 'v' ? p.y : p.x) / k());
+      else setPos(drag, (drag === 'v' ? (flip() ? geo().H - p.y : p.y) : p.x) / k());
     };
     stage.addEventListener('pointermove', move);
     const end = () => { drag = null; };
@@ -34352,10 +34344,12 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
 
   /* il righello si usa anche con la tastiera: è un cursore (slider) */
   function slider(side) {
-    const sl = h('div', { class: 'mt-hit ' + side, role: 'slider', tabindex: '0', 'data-side': side, 'aria-label': SIDE[side], 'aria-orientation': side === 'v' ? 'vertical' : 'horizontal', 'aria-valuemin': '0' });
+    const sl = h('div', { class: 'mt-hit ' + side, role: 'slider', tabindex: '0', 'data-side': side, 'aria-label': SIDE_LABEL()[side], 'aria-orientation': side === 'v' ? 'vertical' : 'horizontal', 'aria-valuemin': '0' });
     sl.addEventListener('focus', () => { if (s.side !== side) { s.side = side; syncMarker(); persist(); } });
     sl.addEventListener('keydown', (e) => {
-      const step = { ArrowUp: -1, ArrowLeft: -1, ArrowDown: 1, ArrowRight: 1, PageUp: -10, PageDown: 10 }[e.key];
+      /* con lo 0 in basso il righello a sinistra cresce verso l'alto */
+      const up = side === 'v' && flip() ? -1 : 1;
+      const step = { ArrowUp: -up, ArrowLeft: -1, ArrowDown: up, ArrowRight: 1, PageUp: -10 * up, PageDown: 10 * up }[e.key];
       const cur = clampPos(side, s.pos[side]);
       if (step) setPos(side, cur + step);
       else if (e.key === 'Home') setPos(side, 0);
@@ -34402,69 +34396,45 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
   }
 
   /* ----------------------------- telefoni ----------------------------- */
-  /* Diagonale in pollici e risoluzione nativa (lato corto × lato lungo) dalle schede dei produttori.
-     Dalla diagonale e dalle proporzioni si ricava la larghezza vera dello schermo in millimetri.
-     Samsung: inizio del codice modello (SM-…). iPhone mini e 8 Plus: larghezza con cui iOS disegna (più grande del vetro). */
-  const PHONES = [
-    ['Apple', [
+  /* Due elenchi, iPhone e Samsung: nome, diagonale in pollici e risoluzione nativa (lato corto × lato lungo).
+     La diagonale basta per la misura; la risoluzione serve a riconoscere l'iPhone dalla larghezza dello schermo.
+     iPhone mini: iOS disegna su 1125 punti, più del vetro. Samsung Z Fold: lo schermo interno, aperto. */
+  const BRANDS = [['apple', 'iPhone'], ['samsung', 'Samsung'], ['altro', 'Altro']];
+  const PHONES = {
+    apple: [
       ['iPhone 17 Pro Max', 6.86, 1320, 2868], ['iPhone 17 Pro', 6.27, 1206, 2622], ['iPhone Air', 6.5, 1260, 2736], ['iPhone 17', 6.27, 1206, 2622],
-      ['iPhone 16e', 6.06, 1170, 2532],
-      ['iPhone 16 Pro Max', 6.86, 1320, 2868], ['iPhone 16 Pro', 6.27, 1206, 2622], ['iPhone 16 Plus', 6.69, 1290, 2796], ['iPhone 16', 6.12, 1179, 2556],
+      ['iPhone 16 Pro Max', 6.86, 1320, 2868], ['iPhone 16 Pro', 6.27, 1206, 2622], ['iPhone 16 Plus', 6.69, 1290, 2796], ['iPhone 16', 6.12, 1179, 2556], ['iPhone 16e', 6.06, 1170, 2532],
       ['iPhone 15 Pro Max', 6.69, 1290, 2796], ['iPhone 15 Pro', 6.12, 1179, 2556], ['iPhone 15 Plus', 6.69, 1290, 2796], ['iPhone 15', 6.12, 1179, 2556],
       ['iPhone 14 Pro Max', 6.69, 1290, 2796], ['iPhone 14 Pro', 6.12, 1179, 2556], ['iPhone 14 Plus', 6.68, 1284, 2778], ['iPhone 14', 6.06, 1170, 2532],
       ['iPhone 13 Pro Max', 6.68, 1284, 2778], ['iPhone 13 Pro', 6.06, 1170, 2532], ['iPhone 13', 6.06, 1170, 2532], ['iPhone 13 mini', 5.42, 1080, 2340, 1125],
-      ['iPhone 12 Pro Max', 6.68, 1284, 2778], ['iPhone 12 Pro', 6.06, 1170, 2532], ['iPhone 12', 6.06, 1170, 2532], ['iPhone 12 mini', 5.42, 1080, 2340, 1125],
-      ['iPhone 11 Pro Max', 6.46, 1242, 2688], ['iPhone 11 Pro', 5.85, 1125, 2436], ['iPhone 11', 6.06, 828, 1792],
-      ['iPhone XS Max', 6.46, 1242, 2688], ['iPhone XS', 5.85, 1125, 2436], ['iPhone XR', 6.06, 828, 1792], ['iPhone X', 5.85, 1125, 2436],
-      ['iPhone SE (2020, 2022)', 4.7, 750, 1334], ['iPhone 8 Plus', 5.5, 1080, 1920, 1242], ['iPhone 8', 4.7, 750, 1334]]],
-    ['Samsung', [
-      ['Galaxy S25 Ultra', 6.9, 1440, 3120, 'SM-S938'], ['Galaxy S25 Edge', 6.7, 1440, 3120, 'SM-S937'], ['Galaxy S25+', 6.7, 1440, 3120, 'SM-S936'], ['Galaxy S25', 6.2, 1080, 2340, 'SM-S931'], ['Galaxy S25 FE', 6.7, 1080, 2340, 'SM-S731'],
-      ['Galaxy S24 Ultra', 6.8, 1440, 3120, 'SM-S928'], ['Galaxy S24+', 6.7, 1440, 3120, 'SM-S926'], ['Galaxy S24', 6.2, 1080, 2340, 'SM-S921'], ['Galaxy S24 FE', 6.7, 1080, 2340, 'SM-S721'],
-      ['Galaxy S23 Ultra', 6.8, 1440, 3088, 'SM-S918'], ['Galaxy S23+', 6.6, 1080, 2340, 'SM-S916'], ['Galaxy S23', 6.1, 1080, 2340, 'SM-S911'], ['Galaxy S23 FE', 6.4, 1080, 2340, 'SM-S711'],
-      ['Galaxy S22 Ultra', 6.8, 1440, 3088, 'SM-S908'], ['Galaxy S22+', 6.6, 1080, 2340, 'SM-S906'], ['Galaxy S22', 6.1, 1080, 2340, 'SM-S901'],
-      ['Galaxy S21 Ultra', 6.8, 1440, 3200, 'SM-G998'], ['Galaxy S21+', 6.7, 1080, 2400, 'SM-G996'], ['Galaxy S21', 6.2, 1080, 2400, 'SM-G991'], ['Galaxy S21 FE', 6.4, 1080, 2340, 'SM-G990'],
-      ['Galaxy Z Flip7', 6.9, 1080, 2520, 'SM-F766'], ['Galaxy Z Flip6', 6.7, 1080, 2640, 'SM-F741'], ['Galaxy Z Flip5', 6.7, 1080, 2640, 'SM-F731'],
-      ['Galaxy A56', 6.7, 1080, 2340, 'SM-A566'], ['Galaxy A55', 6.6, 1080, 2340, 'SM-A556'], ['Galaxy A54', 6.4, 1080, 2340, 'SM-A546'], ['Galaxy A53', 6.5, 1080, 2400, 'SM-A536'], ['Galaxy A52', 6.5, 1080, 2400, 'SM-A525'],
-      ['Galaxy A36', 6.7, 1080, 2340, 'SM-A366'], ['Galaxy A35', 6.6, 1080, 2340, 'SM-A356'], ['Galaxy A34', 6.6, 1080, 2340, 'SM-A346'],
-      ['Galaxy A26', 6.7, 1080, 2340, 'SM-A266'], ['Galaxy A25', 6.5, 1080, 2340, 'SM-A256'],
-      ['Galaxy A16', 6.7, 1080, 2340, 'SM-A165'], ['Galaxy A15', 6.5, 1080, 2340, 'SM-A155'], ['Galaxy A14', 6.6, 1080, 2408, 'SM-A145']]],
-    ['Google', [
-      ['Pixel 10 Pro XL', 6.8, 1344, 2992], ['Pixel 10 Pro', 6.3, 1280, 2856], ['Pixel 10', 6.3, 1080, 2424],
-      ['Pixel 9 Pro XL', 6.8, 1344, 2992], ['Pixel 9 Pro', 6.3, 1280, 2856], ['Pixel 9', 6.3, 1080, 2424], ['Pixel 9a', 6.3, 1080, 2424],
-      ['Pixel 8 Pro', 6.7, 1344, 2992], ['Pixel 8', 6.2, 1080, 2400], ['Pixel 8a', 6.1, 1080, 2400],
-      ['Pixel 7 Pro', 6.7, 1440, 3120], ['Pixel 7', 6.3, 1080, 2400], ['Pixel 7a', 6.1, 1080, 2400],
-      ['Pixel 6 Pro', 6.71, 1440, 3120], ['Pixel 6', 6.4, 1080, 2400], ['Pixel 6a', 6.1, 1080, 2400]]],
-    ['Xiaomi', [
-      ['Xiaomi 15', 6.36, 1200, 2670], ['Xiaomi 14T / 14T Pro', 6.67, 1220, 2712], ['Xiaomi 14', 6.36, 1200, 2670], ['Xiaomi 13T / 13T Pro', 6.67, 1220, 2712], ['Xiaomi 13', 6.36, 1080, 2400],
-      ['Redmi Note 14 Pro / Pro+', 6.67, 1220, 2712], ['Redmi Note 14', 6.67, 1080, 2400], ['Redmi Note 13 Pro / Pro+', 6.67, 1220, 2712], ['Redmi Note 13', 6.67, 1080, 2400],
-      ['Redmi Note 12 Pro', 6.67, 1080, 2400], ['Redmi Note 12', 6.67, 1080, 2400]]],
-    ['Altri', [
-      ['OnePlus 13', 6.82, 1440, 3168], ['OnePlus 12', 6.82, 1440, 3168], ['OnePlus 11', 6.7, 1440, 3216], ['OnePlus Nord 4', 6.74, 1240, 2772], ['OnePlus Nord 3', 6.74, 1240, 2772],
-      ['Nothing Phone (3a)', 6.77, 1080, 2392], ['Nothing Phone (2)', 6.7, 1080, 2412], ['Nothing Phone (1)', 6.55, 1080, 2400],
-      ['Fairphone 5', 6.46, 1224, 2700], ['Motorola edge 50', 6.67, 1220, 2712], ['Motorola moto g54', 6.5, 1080, 2400],
-      ['Huawei P40', 6.1, 1080, 2340], ['Huawei P30 Pro', 6.47, 1080, 2340], ['Huawei P30', 6.1, 1080, 2340]]]
-  ].map(([brand, list]) => [brand, list.map(([name, d, S, L, x]) => ({ id: `${brand} ${name}`, brand, name, d, S, L, code: typeof x === 'string' ? x : '', ios: typeof x === 'number' ? x : S }))]);
-  const ALL = PHONES.flatMap(([, l]) => l);
+      ['iPhone 12 Pro Max', 6.68, 1284, 2778], ['iPhone 12 Pro', 6.06, 1170, 2532], ['iPhone 12', 6.06, 1170, 2532], ['iPhone 12 mini', 5.42, 1080, 2340, 1125]],
+    samsung: [
+      ['Galaxy S26 Ultra', 6.9], ['Galaxy S26+', 6.7], ['Galaxy S26', 6.3], ['Galaxy S26 FE', 6.7],
+      ['Galaxy Z Fold8 Ultra (aperto)', 8.0], ['Galaxy Z Fold8 (aperto)', 7.6], ['Galaxy Z Flip8', 6.9]]
+  };
+  for (const b of Object.keys(PHONES)) PHONES[b] = PHONES[b].map(([name, d, S, L, ios]) => ({ id: `${b} ${name}`, brand: b, name, d, S, L, ios: ios || S }));
+  const ALL = Object.values(PHONES).flat();
   const byId = (id) => ALL.find((p) => p.id === id) || null;
-  /* punti CSS per millimetro: il lato corto dello schermo diviso per la sua larghezza vera */
-  const phonePxmm = (p) => Math.min(screen.width, screen.height) / (p.d * 25.4 * p.S / Math.hypot(p.S, p.L));
+  /* punti CSS per millimetro: la diagonale dello schermo in punti divisa per la diagonale vera */
+  const phonePxmm = (p) => Math.hypot(screen.width, screen.height) / (p.d * 25.4);
   const sizeKey = (p) => `${p.d}|${p.S}|${p.L}`;
-  /* Telefoni che potrebbero essere questo: prima dal modello che il browser dichiara, poi dalle proporzioni
-     dello schermo (sull'iPhone anche dalla larghezza). Gruppi di modelli con lo stesso schermo, al massimo tre. */
+
+  /* Marca del telefono dal browser: iPhone dal testo, Samsung dal modello (SM-…) se il browser lo dice */
   let model = '';
+  const isIos = () => /iPhone/.test(navigator.userAgent || '');
+  function brandGuess() {
+    const ua = navigator.userAgent || '';
+    if (isIos()) return 'apple';
+    if (/SM-|Samsung/i.test(model + ' ' + ua)) return 'samsung';
+    return /Android/.test(ua) ? 'altro' : 'apple';
+  }
+  /* iPhone con la stessa larghezza e le stesse proporzioni di questo schermo, a gruppi con lo stesso schermo */
   function guesses() {
     const a = Math.min(screen.width, screen.height), b = Math.max(screen.width, screen.height), dpr = window.devicePixelRatio || 1;
-    if (!HT.touch() || a < 280 || a > 520) return [];
-    const ua = navigator.userAgent || '';
-    const m = (model || (ua.match(/Android [^;)]*;\s*([^;)]+?)(?:\sBuild|\))/) || [])[1] || '').trim().toLowerCase();
-    if (m && m !== 'k') {
-      const hit = ALL.find((p) => (p.code && m.startsWith(p.code.toLowerCase())) || p.name.toLowerCase() === m);
-      if (hit) return [[hit]];
-    }
-    const ios = /iPhone/.test(ua);
+    if (!isIos()) return [];
     const groups = [];
-    for (const p of ALL) {
-      if ((p.brand === 'Apple') !== ios || Math.abs(b / a - p.L / p.S) > 0.012 || (ios && Math.abs(a * dpr - p.ios) > 6)) continue;
+    for (const p of PHONES.apple) {
+      if (Math.abs(b / a - p.L / p.S) > 0.012 || Math.abs(a * dpr - p.ios) > 6) continue;
       const g = groups.find((x) => sizeKey(x[0]) === sizeKey(p));
       if (g) g.push(p); else groups.push([p]);
     }
@@ -34473,7 +34443,10 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
   /* Chrome su Android non scrive più il modello nel testo del browser: si può chiedere a parte */
   try {
     if (navigator.userAgentData && navigator.userAgentData.getHighEntropyValues) {
-      navigator.userAgentData.getHighEntropyValues(['model']).then((v) => { model = (v && v.model) || ''; if (cal && parts && parts.sugg) fillGuesses(); }, () => {});
+      navigator.userAgentData.getHighEntropyValues(['model']).then((v) => {
+        model = (v && v.model) || '';
+        if (cal && !cal.brandSet && !cal.phone && parts && parts.phoneBox) { cal.brand = brandGuess(); drawPhoneBox(); }
+      }, () => {});
     }
   } catch (e) { /* il modello resta sconosciuto */ }
 
@@ -34481,7 +34454,9 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
   function startCal() {
     /* prima stima: 96 punti per pollice sul computer, circa 6 punti per millimetro sul telefono */
     const guess = HT.touch() ? 6.05 : 96 / 25.4;
-    cal = { pxmm: ready() ? s.pxmm : (s.pxmm || guess), prev: ready(), phone: ready() ? s.phone || '' : '' };
+    const phone = ready() ? s.phone || '' : '';
+    const p = byId(phone);
+    cal = { pxmm: ready() ? s.pxmm : (s.pxmm || guess), prev: ready(), phone: p ? phone : '', brand: p ? p.brand : brandGuess() };
     draw();
   }
   function setCal(v) {
@@ -34512,30 +34487,65 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
   }
   /* stato sotto la scelta: modello attivo e schermo, oppure cosa fare */
   function syncPhone() {
-    if (!parts || !parts.phoneSel) return;
+    if (!parts || !parts.phoneNote) return;
     const p = byId(cal.phone), grp = p && cal.grp;
-    parts.phoneSel.value = p && !grp ? p.id : '';
-    for (const b of parts.sugg.querySelectorAll('.mt-guess')) b.setAttribute('aria-pressed', String(!!p && b.dataset.ids.split('|').includes(p.id)));
+    if (parts.phoneSel) parts.phoneSel.value = p && !grp && p.brand === cal.brand ? p.id : '';
+    for (const b of parts.phoneBox.querySelectorAll('.mt-guess')) b.setAttribute('aria-pressed', String(!!p && b.dataset.ids.split('|').includes(p.id)));
     const inch = p ? `${nf[1].format(p.d)}″` : '';
-    parts.phoneNote.textContent = !p ? 'Scegli il modello e il righello si regola da solo.'
-      : grp ? `Schermo da ${inch}, uguale per ${grp.map((x) => x.name).join(', ')}. Il righello è pronto: tocca «Fatto».`
-      : `${p.name}, schermo da ${inch}. Il righello è pronto: tocca «Fatto».`;
+    parts.phoneNote.textContent = p
+      ? grp ? `Schermo da ${inch}, uguale per ${grp.map((x) => x.name).join(', ')}. Il righello è pronto: tocca «Fatto».`
+        : `${p.name}, schermo da ${inch}. Il righello è pronto: tocca «Fatto».`
+      : cal.brand === 'altro' ? 'Scrivi la diagonale dello schermo: la trovi nelle caratteristiche del telefono.'
+        : 'Scegli il modello e il righello si regola da solo.';
+  }
+  function guessButtons() {
+    const g = guesses();
+    if (!g.length) return [];
+    return [h('p', { class: 'mt-sugg-h' }, g.length === 1 ? 'Sembra il tuo telefono:' : 'Il tuo schermo è come uno di questi:'),
+      ...g.map((grp) => h('button', { type: 'button', class: 'btn mt-guess', 'data-ids': grp.map((p) => p.id).join('|'), 'aria-pressed': 'false', title: grp.map((p) => p.name).join(', '), onclick: () => pickPhone(grp[0], grp) },
+        icon('check'), h('span', { class: 'mt-guess-t' }, h('span', { class: 'mt-guess-n' }, grp[0].name),
+          grp.length > 1 ? h('span', { class: 'mt-guess-s' }, 'Anche ' + grp.slice(1).map((p) => p.name).join(', ')) : null)))];
+  }
+  function diagField(id) {
+    const diag = h('input', { class: 'inp', id, inputmode: 'decimal', placeholder: 'Es. 6,1', autocomplete: 'off' });
+    const useDiag = () => {
+      const d = HT.num(diag.value);
+      if (!(d > 2 && d < 40)) { HT.toast('Scrivi la diagonale in pollici, per esempio 6,1.', true); diag.focus(); return; }
+      adjust(Math.hypot(screen.width, screen.height) / (d * 25.4));
+      HT.toast('Calcolato dalla diagonale: controlla con la carta o con un righello.');
+    };
+    diag.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); useDiag(); } });
+    return h('div', { class: 'mt-diag' },
+      h('label', { class: 'fld-l', for: id }, 'Diagonale dello schermo (pollici)'),
+      h('div', { class: 'mt-diag-row' }, diag, HT.btn('Usa', useDiag, { cls: 'sm' })));
+  }
+  /* Il telefono: prima la marca (iPhone, Samsung, altro), poi il modello da un elenco nativo,
+     che sul telefono si sfoglia con il dito. Per gli altri telefoni la diagonale. */
+  function drawPhoneBox() {
+    const box = parts.phoneBox;
+    const brandSeg = HT.seg('mtbrand', BRANDS, cal.brand, (v) => { cal.brand = v; cal.brandSet = true; drawPhoneBox(); }, 'Marca del telefono');
+    brandSeg.classList.add('mt-brand');
+    parts.phoneSel = null;
+    let pick;
+    if (cal.brand === 'altro') pick = [diagField('mtDiag')];
+    else {
+      const sel = h('select', { class: 'inp msel mt-phone', id: 'mtPhone', 'aria-label': `Modello ${cal.brand === 'apple' ? 'iPhone' : 'Samsung'}` },
+        h('option', { value: '' }, 'Scegli il modello…'),
+        ...PHONES[cal.brand].map((p) => h('option', { value: p.id }, p.name)));
+      sel.addEventListener('change', () => { const p = byId(sel.value); if (p) pickPhone(p); else { cal.phone = ''; cal.grp = null; syncPhone(); } });
+      parts.phoneSel = sel;
+      pick = [...(cal.brand === 'apple' ? guessButtons() : []), sel];
+    }
+    parts.phoneNote = h('p', { class: 'fld-h mt-phone-note', 'aria-live': 'polite' });
+    box.replaceChildren(h('p', { class: 'fld-l mt-phone-l' }, 'Il tuo telefono'), brandSeg, ...pick, parts.phoneNote);
+    syncPhone();
   }
   function fillGuesses() {
-    if (!parts || !parts.phoneSel) return;
-    const g = guesses();
-    parts.sugg.hidden = !g.length;
-    parts.sugg.replaceChildren(...(g.length ? [
-      h('p', { class: 'mt-sugg-h' }, g.length === 1 ? 'Sembra il tuo telefono:' : 'Il tuo schermo è come uno di questi:'),
-      ...g.map((grp) => {
-        const b = h('button', { type: 'button', class: 'btn mt-guess', 'data-ids': grp.map((p) => p.id).join('|'), 'aria-pressed': 'false', title: grp.map((p) => p.name).join(', '), onclick: () => pickPhone(grp[0], grp) },
-          icon('check'), h('span', { class: 'mt-guess-t' }, h('span', { class: 'mt-guess-n' }, grp[0].name),
-            grp.length > 1 ? h('span', { class: 'mt-guess-s' }, 'Anche ' + grp.slice(1).map((p) => p.name).join(', ')) : null));
-        return b;
-      })] : []));
+    if (!parts || !parts.phoneBox) return;
+    drawPhoneBox();
     /* un solo schermo possibile e nessuna taratura: si regola subito, basta toccare «Fatto» */
-    if (g.length === 1 && !cal.prev && !cal.phone && !cal.auto) { cal.auto = true; pickPhone(g[0][0], g[0]); return; }
-    syncPhone();
+    const g = guesses();
+    if (cal.brand === 'apple' && g.length === 1 && !cal.prev && !cal.phone && !cal.auto) { cal.auto = true; pickPhone(g[0][0], g[0]); }
   }
   function endCal(save) {
     if (save) { s.pxmm = Math.round(cal.pxmm * 1000) / 1000; s.sig = sig(); s.phone = cal.phone || ''; persist(); }
@@ -34551,43 +34561,23 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
     range.addEventListener('input', () => adjust(Number(range.value)));
     parts.calRange = range;
     const fine = (f, name, label) => HT.iconBtn(name, label, () => adjust(cal.pxmm * f), 'mt-nudge');
-
-    /* il telefono: solo dove lo schermo è quello di un telefono; un elenco nativo (sul telefono si sfoglia con il dito), diviso per marca */
+    /* la scelta del telefono solo dove lo schermo è quello di un telefono */
     const phones = HT.touch();
-    const sel = h('select', { class: 'inp msel mt-phone', id: 'mtPhone' },
-      h('option', { value: '' }, 'Scegli il modello…'),
-      ...PHONES.map(([brand, list]) => h('optgroup', { label: brand }, list.map((p) => h('option', { value: p.id }, p.name)))));
-    sel.addEventListener('change', () => { const p = byId(sel.value); if (p) pickPhone(p); else { cal.phone = ''; cal.grp = null; syncPhone(); } });
-    if (phones) parts.phoneSel = sel;
-    parts.sugg = h('div', { class: 'mt-sugg' });
-    parts.phoneNote = h('p', { class: 'fld-h mt-phone-note', 'aria-live': 'polite' });
-
-    const diag = h('input', { class: 'inp', id: 'mtDiag', inputmode: 'decimal', placeholder: 'Es. 6,1', autocomplete: 'off' });
-    const useDiag = () => {
-      const d = HT.num(diag.value);
-      if (!(d > 2 && d < 40)) { HT.toast('Scrivi la diagonale in pollici, per esempio 6,1.', true); diag.focus(); return; }
-      adjust(Math.hypot(screen.width, screen.height) / (d * 25.4));
-      HT.toast('Calcolato dalla diagonale: controlla con la carta o con un righello.');
-    };
-    diag.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); useDiag(); } });
-    const panel = h('section', { class: 'mt-cal', 'aria-labelledby': 'mtCalH' },
+    parts.phoneBox = phones ? h('div', { class: 'mt-phone-box' }) : null;
+    parts.phoneNote = null;
+    return h('section', { class: 'mt-cal', 'aria-labelledby': 'mtCalH' },
       h('h2', { class: 'tool-h mt-cal-h', id: 'mtCalH', tabindex: '-1' }, 'Taratura del metro'),
-      phones ? h('div', { class: 'mt-phone-box' },
-        h('label', { class: 'fld-l', for: 'mtPhone' }, 'Il tuo telefono'),
-        parts.sugg, sel, parts.phoneNote) : null,
+      parts.phoneBox,
       phones ? h('h3', { class: 'mt-cal-sub' }, 'Oppure con una carta') : null,
       h('p', { class: 'mt-cal-p' }, 'Appoggia una carta in formato bancomat (carta di credito, tessera della cassa malati, licenza di condurre) nell\'angolo in alto a sinistra dello schermo. Trascina il bordo del riquadro blu finché sparisce proprio sotto la carta.'),
       h('div', { class: 'mt-cal-row' }, fine(1 / 1.002, 'zoomOut', 'Rimpicciolisci un poco'), range, fine(1.002, 'zoomIn', 'Ingrandisci un poco')),
-      h('details', { class: 'mt-more' },
-        h('summary', null, 'Il telefono non è nell\'elenco e non hai una carta?'),
-        h('div', { class: 'mt-diag' },
-          h('label', { class: 'fld-l', for: 'mtDiag' }, 'Diagonale dello schermo (pollici)'),
-          h('div', { class: 'mt-diag-row' }, diag, HT.btn('Usa', useDiag, { cls: 'sm' })),
-          h('p', { class: 'fld-h' }, 'La trovi nelle caratteristiche del telefono. Puoi anche usare un righello vero: confronta i centimetri sul bordo e regola.'))),
+      phones ? null : h('details', { class: 'mt-more' },
+        h('summary', null, 'Non hai una carta?'),
+        diagField('mtDiag'),
+        h('p', { class: 'fld-h' }, 'La trovi nelle caratteristiche dello schermo. Puoi anche usare un righello vero: confronta i centimetri sul bordo e regola.')),
       h('div', { class: 'mt-cal-act' },
         HT.btn(cal.prev ? 'Annulla' : 'Esci', () => endCal(false), { cls: 'ghost' }),
         HT.btn('Fatto', () => endCal(true), { cls: 'primary', icon: 'check' })));
-    return panel;
   }
 
   /* ----------------------------- disegno ----------------------------- */
@@ -34596,13 +34586,13 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
     if (!ready() && !cal) { startCal(); return; }
     const stage = h('div', { class: 'mt-stage' });
     parts = { stage, stripW: 58, stripH: 50 };
-    el.replaceChildren(h('div', { class: 'metro' + (cal ? ' calibrating' : '') }, stage));
+    el.replaceChildren(h('div', { class: 'metro' + (cal ? ' calibrating' : '') + (flip() ? ' flip' : '') }, stage));
     if (cal) {
       parts.card = h('div', { class: 'mt-card', 'aria-hidden': 'true' }, h('span', null, 'Carta'));
       stage.append(rulersSvg(), parts.card, calPanel());
       attachDrag(stage);
       setCal(cal.pxmm);
-      fillGuesses();
+      if (parts.phoneBox) fillGuesses();
       parts.stage.querySelector('#mtCalH').focus({ preventScroll: true });
       return;
     }
@@ -34612,7 +34602,8 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
     parts.read = h('output', { class: 'mt-read', 'aria-live': 'polite' });
     parts.addBtn = h('button', { type: 'button', class: 'btn primary lg mt-add', onclick: () => add(s.pos[s.side]) }, icon('plus'), h('span'));
     parts.stepBtn = h('button', { type: 'button', class: 'btn mt-step', onclick: () => { const mm = stepMm(s.side); setPos(s.side, mm); add(mm); } }, icon('ruler'), h('span'));
-    parts.sideSeg = HT.seg('mtside', [['v', 'A sinistra'], ['h', 'In alto']], s.side, (v) => { s.side = v; persist(); syncMarker(); }, 'Righello da usare');
+    parts.sideSeg = HT.seg('mtside', [['v', 'A sinistra'], ['h', flip() ? 'In basso' : 'In alto']], s.side, (v) => { s.side = v; persist(); syncMarker(); }, 'Righello da usare');
+    const zeroSeg = HT.seg('mtzero', [['top', '0 in alto'], ['bottom', '0 in basso']], s.zero === 'bottom' ? 'bottom' : 'top', (v) => { s.zero = v; persist(); draw(); }, 'Da dove parte lo 0');
     parts.total = h('strong', { class: 'mt-tot-v' });
     parts.count = h('span', { class: 'mt-tot-n' });
     parts.list = h('ol', { class: 'mt-list', role: 'list' });
@@ -34630,7 +34621,7 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
         HT.seg('mtunit', [['cm', 'cm'], ['mm', 'mm']], s.unit, (v) => { s.unit = v; persist(); draw(); }, 'Unità di misura'),
         HT.iconBtn('target', 'Tara di nuovo il metro', startCal, 'mt-calbtn')),
       h('section', { class: 'mt-measure', 'aria-label': 'Misura' },
-        parts.sideSeg,
+        h('div', { class: 'mt-segs' }, parts.sideSeg, zeroSeg),
         h('div', { class: 'mt-read-row' }, nudge(-1, 'minus', 'Un millimetro in meno'), parts.read, nudge(1, 'plus', 'Un millimetro in più')),
         parts.addBtn, parts.stepBtn,
         h('p', { class: 'mt-hint' }, 'Oggetto più lungo del telefono? Tocca «Passo intero», segna con la matita dove finisce il righello, sposta lo 0 sul segno e continua. Le misure si sommano qui sotto.')),
