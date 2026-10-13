@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval' blob:; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src data: blob:; connect-src data: blob:; worker-src 'self' blob:; media-src blob: mediastream:; base-uri 'none'; form-action 'none'; manifest-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval' blob:; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src data: blob:; connect-src 'self' data: blob:; worker-src 'self' blob:; media-src blob: mediastream:; base-uri 'none'; form-action 'none'; manifest-src 'self'">
 <meta name="color-scheme" content="light dark">
 <title>HelpfulTool</title>
 <link rel="manifest" href="manifest.webmanifest">
@@ -14,6 +14,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#005a9c">
 <script>
+  /* Versione online: l'app legge gli avvisi dell'autore da questo file del sito (nessun dato inviato). */
+  window.HT_MESSAGES = 'messages.json';
   /* Copia offline sul telefono: il service worker tiene l'app in memoria dopo la prima apertura. */
   if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
     addEventListener('load', function () {
@@ -2504,6 +2506,114 @@ html:has(.pw-tabbar) { scroll-padding-top: calc(var(--topbar-h) + 70px); }
 @media (min-width: 1181px) { .pw-rail, html.touch .pw-rail { overflow-x: hidden; overflow-y: auto; touch-action: pan-x pan-y; overscroll-behavior: contain; } }
 /* sul telefono la striscia sfuma a destra: si capisce che continua */
 @media (max-width: 640px) { .hub-tabs { -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent); mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent); padding-right: 20px; } }
+
+/* ----------------------------- Metro ----------------------------- */
+/* Il metro occupa tutto lo schermo: i righelli partono dal bordo vero della pagina, sopra barre e menu. */
+html.metro-on, html.metro-on body { overflow: hidden; overscroll-behavior: none; }
+.metro { --mt-w: 58px; --mt-h: 50px; position: fixed; inset: 0; z-index: 25; background: var(--bg); padding: env(safe-area-inset-top) env(safe-area-inset-right) 0 env(safe-area-inset-left); }
+.mt-stage { position: relative; width: 100%; height: 100%; overflow: hidden; }
+.mt-svg { position: absolute; left: 0; top: 0; pointer-events: none; user-select: none; -webkit-user-select: none; }
+.mt-strip { fill: var(--surface); }
+.mt-edge { fill: none; stroke: var(--line-strong); stroke-width: 1; }
+.mt-t { fill: none; stroke: var(--ink); stroke-linecap: butt; }
+.mt-t.mm { stroke: var(--ink-2); stroke-width: 1; }
+.mt-t.half { stroke-width: 1.25; }
+.mt-t.cm { stroke-width: 1.6; }
+.mt-n { fill: var(--ink); font: 600 12px var(--font); font-variant-numeric: tabular-nums; }
+.mt-unit { fill: var(--ink-3); font: 600 11px var(--font); letter-spacing: .02em; }
+
+/* zone da toccare e trascinare (sono anche cursori per la tastiera) */
+.mt-hit { position: absolute; left: 0; top: 0; touch-action: none; -webkit-tap-highlight-color: transparent; z-index: 2; }
+.mt-hit.v { bottom: 0; width: var(--mt-w); cursor: ns-resize; }
+.mt-hit.h { right: 0; height: var(--mt-h); cursor: ew-resize; }
+.mt-hit:focus { outline: none; }
+.mt-hit:focus-visible { outline: 2px solid var(--focus); outline-offset: -3px; }
+
+/* il segno attraversa lo schermo, il valore lo accompagna */
+.mt-line { position: absolute; left: 0; top: 0; z-index: 3; pointer-events: none; background: var(--accent); }
+.mt-line.v { width: 100%; height: 2px; margin-top: -1px; }
+.mt-line.h { width: 2px; height: 100%; margin-left: -1px; }
+.mt-pill { position: absolute; left: 0; top: 0; z-index: 4; pointer-events: none; padding: 4px 10px; border-radius: var(--pill); background: var(--accent); color: var(--accent-ink); font: 600 14px/1.3 var(--font); font-variant-numeric: tabular-nums; white-space: nowrap; box-shadow: 0 2px 8px rgba(16, 41, 59, .22); }
+.mt-pill.v { translate: 0 -50%; }
+.mt-pill.h { translate: -50% 0; }
+
+.mt-body { position: absolute; left: var(--mt-w); top: var(--mt-h); right: 0; bottom: 0; z-index: 1; overflow: auto; overscroll-behavior: contain; padding: 12px 16px calc(28px + env(safe-area-inset-bottom)); }
+.mt-body > * { max-width: 560px; }
+.mt-top { display: flex; align-items: center; gap: 8px; }
+.mt-back { margin-left: -6px; }
+.mt-h { flex: 1; margin: 0; font: 700 var(--fs-lg)/1.2 var(--font-head); color: var(--ink); }
+.mt-top .seg span { min-width: 40px; text-align: center; }
+
+.mt-measure { margin-top: 18px; display: flex; flex-direction: column; gap: 10px; }
+.mt-measure > .seg { align-self: flex-start; }
+.mt-read-row { display: grid; grid-template-columns: 48px minmax(0, 1fr) 48px; align-items: center; gap: 8px; padding: 6px 0; }
+.mt-read { text-align: center; font: 600 clamp(34px, 10vw, 48px)/1.1 var(--font); font-variant-numeric: tabular-nums; letter-spacing: -.02em; color: var(--ink); }
+.mt-nudge { width: 48px; height: 48px; border: 1px solid var(--line-strong); border-radius: var(--r-lg); background: var(--surface); color: var(--ink); }
+.mt-nudge:hover { background: var(--surface-3); }
+.mt-nudge:active { transform: scale(.96); }
+.mt-add, .mt-step { width: 100%; justify-content: center; font-variant-numeric: tabular-nums; }
+.mt-add { min-height: 52px; }
+.mt-step { min-height: 46px; }
+.mt-hint { margin: 2px 0 0; color: var(--ink-3); font-size: var(--fs-sm); line-height: 1.5; }
+
+.mt-sum { margin-top: 26px; padding-top: 16px; border-top: 1px solid var(--line); }
+.mt-tot { display: flex; align-items: baseline; flex-wrap: wrap; gap: 2px 12px; }
+.mt-tot h3 { margin: 0; font: 700 var(--fs-md)/1.3 var(--font-head); color: var(--ink); }
+.mt-tot-v { font: 600 var(--fs-xl)/1.2 var(--font); font-variant-numeric: tabular-nums; color: var(--accent-text); }
+.mt-tot-n { margin-left: auto; color: var(--ink-3); font-size: var(--fs-sm); }
+.mt-list { list-style: none; margin: 12px 0; padding: 0; }
+.mt-row { display: grid; grid-template-columns: 20px minmax(0, 1fr) auto 44px; gap: 8px; align-items: center; padding: 6px 0; border-top: 1px solid var(--line); }
+.mt-i { text-align: right; color: var(--ink-3); font-size: var(--fs-xs); font-variant-numeric: tabular-nums; }
+.mt-lab { min-height: 40px; }
+.mt-v { font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--ink); }
+.mt-del { color: var(--ink-3); }
+.mt-del:hover { color: var(--del-line); }
+.mt-empty { padding: 12px 0; border-top: 1px solid var(--line); color: var(--ink-2); font-size: var(--fs-sm); line-height: 1.5; }
+
+/* taratura: la carta disegnata parte dall'angolo dei righelli */
+.metro.calibrating .mt-stage { touch-action: none; cursor: ew-resize; }
+.mt-card { position: absolute; left: 0; top: 0; z-index: 2; display: grid; place-items: center; background: var(--accent); opacity: .9; pointer-events: none; }
+.mt-card span { color: var(--accent-ink); font: 600 var(--fs-md) var(--font); letter-spacing: .02em; }
+.mt-cal { position: absolute; left: 0; right: 0; bottom: 0; z-index: 5; max-height: 62%; overflow: auto; overscroll-behavior: contain; touch-action: auto; cursor: auto;
+  padding: 16px 16px calc(16px + env(safe-area-inset-bottom)); background: var(--surface); border-top: 1px solid var(--line); box-shadow: 0 -10px 28px rgba(16, 41, 59, .14); }
+.mt-cal > * { max-width: 560px; margin-left: auto; margin-right: auto; }
+.mt-cal-h { margin-top: 0; margin-bottom: 6px; font: 700 var(--fs-lg)/1.25 var(--font-head); color: var(--ink); }
+.mt-cal-p { margin-top: 0; margin-bottom: 8px; color: var(--ink-2); font-size: var(--fs-sm); line-height: 1.5; }
+.mt-cal-row { display: grid; grid-template-columns: 48px minmax(0, 1fr) 48px; gap: 8px; align-items: center; }
+.mt-range { width: 100%; height: 44px; margin: 0; accent-color: var(--accent); }
+.mt-more summary { min-height: 44px; display: flex; align-items: center; color: var(--accent-text); font-size: var(--fs-sm); font-weight: 600; cursor: pointer; }
+.mt-diag { display: flex; flex-direction: column; gap: 6px; padding-bottom: 6px; }
+.mt-diag-row { display: flex; gap: 8px; }
+.mt-diag-row .inp { max-width: 140px; }
+.mt-cal-act { display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px; }
+.mt-cal-act .btn { min-height: 48px; min-width: 120px; justify-content: center; }
+@media (max-width: 640px) { .mt-cal-act .btn { flex: 1; } }
+@media (prefers-reduced-motion: reduce) { .mt-nudge:active { transform: none; } }
+@media print { .metro { display: none !important; } }
+
+/* ----------------------------- Messaggi ----------------------------- */
+.msg-banner { display: grid; grid-template-columns: 40px minmax(0, 1fr) 44px; gap: 14px; align-items: start; margin: -8px 0 26px; padding: 16px 10px 16px 18px; border-radius: var(--r-lg); background: var(--accent-soft); }
+.msg-ico { width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center; background: var(--accent); color: var(--accent-ink); }
+.msg-ico .i { width: 20px; height: 20px; }
+.msg-txt { min-width: 0; }
+.msg-meta { margin: 0; color: var(--ink-2); font-size: var(--fs-xs); font-weight: 600; font-variant-numeric: tabular-nums; }
+.msg-t { margin: 2px 0 4px; font: 700 var(--fs-lg)/1.3 var(--font-head); color: var(--ink); text-wrap: balance; overflow-wrap: anywhere; }
+.msg-body { margin: 0; max-width: 70ch; color: var(--ink-2); line-height: 1.55; white-space: pre-line; overflow-wrap: anywhere;
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; overflow: hidden; }
+.msg-body.full { display: block; -webkit-line-clamp: unset; overflow: visible; }
+.msg-act { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 0; }
+.msg-act .btn { min-height: 40px; text-decoration: none; }
+.msg-act .btn .i { width: 16px; height: 16px; }
+.msg-x { margin-top: -6px; }
+.msg-status { margin: 0 0 6px; color: var(--ink-3); font-size: var(--fs-sm); }
+.msg-list { list-style: none; margin: 0; padding: 0; max-width: 760px; }
+.msg-it { padding: 18px 0 20px; border-top: 1px solid var(--line); }
+.msg-it .msg-t { margin-top: 6px; }
+.msg-new { display: inline-block; margin-right: 8px; padding: 1px 8px; border-radius: var(--pill); background: var(--accent); color: var(--accent-ink); font-size: 12px; }
+@media (max-width: 640px) {
+  .msg-banner { margin: 0 0 18px; padding: 14px 6px 14px 14px; gap: 12px; grid-template-columns: 36px minmax(0, 1fr) 44px; }
+  .msg-ico { width: 36px; height: 36px; }
+}
 
 </style>
 </head>
@@ -21064,6 +21174,9 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
     textEdit: '<path d="M4 7V5h11v2M9.5 5v14M7 19h5"/><path d="m14.5 15.5 5-5 2 2-5 5H14.5Z"/>',
     redact: '<rect x="3" y="5" width="18" height="5" rx="1" fill="currentColor"/><path d="M3 14h18M3 18h12"/>',
     eyeOff: '<path d="M9.9 4.2A10 10 0 0 1 12 4c6.5 0 10 8 10 8a17.6 17.6 0 0 1-2.2 3.2M6.6 6.6C3.9 8.4 2 12 2 12s3.5 8 10 8a9.7 9.7 0 0 0 5.4-1.6"/><path d="m2 2 20 20"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/>',
+    ruler: '<path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z"/><path d="m14.5 12.5 2-2M11.5 9.5l2-2M8.5 6.5l2-2M17.5 15.5l2-2"/>',
+    minus: '<path d="M5 12h14"/>',
+    megaphone: '<path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/>',
     network: '<rect x="16" y="16" width="6" height="6" rx="1"/><rect x="2" y="16" width="6" height="6" rx="1"/><rect x="9" y="2" width="6" height="6" rx="1"/><path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3"/><path d="M12 12V8"/>'
   };
   function icon(name, cls) {
@@ -21317,7 +21430,7 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
     ['work', 'Lavoro', 'Fatture, offerte, ore, lettere e curriculum'],
     ['study', 'Studio', 'Orario, scadenze, ripasso, voti e testi'],
     ['money', 'Finanze', 'Budget, spese, imposte e calcoli svizzeri'],
-    ['util', 'Utilità', 'Calcolatori e generatori']
+    ['util', 'Utilità', 'Calcolatori, generatori e metro']
   ];
   /* Raccolte: un solo riquadro nel menu per strumenti affini. Ogni strumento resta un suo indirizzo
      (#/fattura, #/preventivo…) e sopra compare la barra con le sezioni della raccolta. */
@@ -21339,7 +21452,7 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
     work: ['fatture', 'ore', 'scrivi', 'cv'],
     study: ['orario', 'planner', 'flashcard', 'pomodoro', 'voti', 'testo'],
     money: ['budget', 'notaspese', 'imposte', 'calcoli'],
-    util: ['calcolatori', 'generatori']
+    util: ['calcolatori', 'generatori', 'metro']
   };
   /* Strumenti confluiti nel PDF: i vecchi indirizzi aprono la sezione giusta. */
   const ALIAS = { firma: 'pdf/firma', moduli: 'pdf/moduli', ocr: 'pdf/converti', anonimizza: 'pdf/proteggi' };
@@ -21467,7 +21580,7 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
   function todayItems() {
     const items = [];
     for (const t of tools.values()) if (t.today) for (const it of safe(() => t.today(), []) || []) items.push({ icon: t.icon, group: t.group, ...it });
-    const hasData = store.keys().some((k) => !/^ht-(theme|recent|pins|seen|lastBackup|backupSnooze|migr3|hub-)/.test(k));
+    const hasData = store.keys().some((k) => !/^ht-(theme|recent|pins|seen|lastBackup|backupSnooze|migr3|hub-|msgs)/.test(k));
     const last = store.get('ht-lastBackup');
     const snooze = Number(store.get('ht-backupSnooze') || 0);
     const age = last ? Math.floor((Date.now() - new Date(last).getTime()) / DAY) : null;
@@ -21598,6 +21711,7 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
       for (const sec of $$('.home-group', groups)) sec.hidden = !$$('li:not([hidden])', sec).length;
       groups.classList.toggle('searching', !!q);
       if (todayBox) todayBox.hidden = !!q;
+      $('#homeMsgs', el).hidden = !!q;
       if (recentBox) recentBox.hidden = !!q;
       empty.hidden = shown > 0;
     };
@@ -21611,11 +21725,14 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
     const foot = h('p', { class: 'home-foot' },
       h('span', null, `HelpfulTool ${VERSION}`),
       h('button', { type: 'button', class: 'linkish', onclick: () => news.show() }, 'Novità'),
+      tools.has('messaggi') ? h('a', { class: 'linkish', href: '#/messaggi' }, 'Messaggi') : null,
       touch() ? null : h('span', { class: 'home-keys' }, h('kbd', null, 'Ctrl'), ' + ', h('kbd', null, 'K'), ' ricerca rapida · ', h('kbd', null, 'Esc'), ' torna al menu'));
     el.replaceChildren(h('div', { class: 'home-inner' },
       h('div', { class: 'home-head' },
         h('h2', { id: 'homeT', class: 'home-t', tabindex: '-1' }, first ? `${hi}, ${first}. Cosa vuoi fare?` : `${hi}. Cosa vuoi fare?`),
         h('div', { class: 'home-search' }, icon('search'), search, touch() ? null : h('kbd', { class: 'home-search-k', 'aria-hidden': 'true' }, 'Ctrl K'))),
+      /* i messaggi dell'autore (solo versione online) si aggiornano da soli in questo posto */
+      h('div', { id: 'homeMsgs' }, root.HTMessages ? root.HTMessages.banner() : null),
       todayBox, recentBox, groups, empty, prof, foot));
     filter();
   }
@@ -21726,8 +21843,10 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
   }
 
   /* ----------------------------- versione e novità ----------------------------- */
-  const VERSION = '3.1';
+  const VERSION = '3.2';
   const NEWS = [
+    ['Metro', 'Nuovo strumento in Utilità: due righelli sui bordi dello schermo (a sinistra e in alto, con lo 0 nell\'angolo), in centimetri o millimetri. Si tara una volta con una carta in formato bancomat o con la diagonale dello schermo. Trascini il segno fino alla fine dell\'oggetto e tocchi «Aggiungi»: le misure si sommano, con un nome per ognuna, così un oggetto più lungo del telefono si misura a passi.'],
+    ['Messaggi', 'Nella versione per telefono possono arrivare avvisi dall\'autore di HelpfulTool: compaiono in cima al menu e restano nella pagina «Messaggi». L\'app li legge dal proprio sito e non invia nessun dato; il file per il computer resta del tutto offline.'],
     ['Preferiti delle sezioni', 'Nelle raccolte (Calcolatori, Fatture e offerte, Lettere ed email, Generatori) la stella in fondo alla barra delle sezioni mette tra i preferiti solo la sezione aperta, per esempio «Prontuario reti»: nel menu compare con il suo riquadro tra i Preferiti. La stella sul riquadro della raccolta continua a valere per tutta la raccolta.'],
     ['Strisce ferme', 'La barra delle sezioni e le altre strisce (sezioni e miniature del PDF, strumenti in basso sul telefono) scorrono solo a destra e a sinistra: i nomi non si spostano più in su o in giù.'],
     ['Menu più compatto', 'Riquadri più piccoli con solo icona e nome (la descrizione compare passandoci sopra) e strumenti affini raccolti insieme: «Fatture e offerte», «Lettere ed email», «Calcolatori» (calcolatrice, numeri, IP e sottoreti, prontuario reti) e «Generatori» (QR e password). In ogni raccolta una barra in alto porta da una sezione all\'altra.'],
@@ -21767,7 +21886,7 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
       const seen = store.get('ht-seenVersion');
       if (seen === VERSION) return;
       /* al primo avvio in assoluto non c'è nulla di «nuovo» da raccontare */
-      if (!seen && !store.keys().some((k) => !/^ht-(theme|recent|pins|seenVersion|migr3|hub-)/.test(k))) { store.set('ht-seenVersion', VERSION); return; }
+      if (!seen && !store.keys().some((k) => !/^ht-(theme|recent|pins|seenVersion|migr3|hub-|msgs)/.test(k))) { store.set('ht-seenVersion', VERSION); return; }
       setTimeout(() => news.show(), 400);
     }
   };
@@ -34071,6 +34190,465 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
     desc: 'Porte, modello OSI, indirizzi speciali, tabella CIDR, IPv6, comandi Cisco e cavi',
     keywords: 'porte port tcp udp protocollo osi tcp/ip ipv4 ipv6 privato cidr maschera wildcard classe comandi cisco ios windows linux vlan trunk cavo cat6 wifi t568b dns dhcp ssh http rete network prontuario cheat sheet',
     mount(node) { el = node; s = load(); render(); }, reload() { s = load(); if (el) render(); }
+  });
+})(typeof self !== 'undefined' ? self : this);
+
+</script>
+<script>/* metro */
+/* HelpfulTool — Metro: due righelli sui bordi dello schermo (a sinistra e in alto, con lo 0 nell'angolo),
+   tarati una volta con una carta in formato bancomat (85,6 × 54 mm) o con la diagonale dello schermo.
+   Si trascina il segno fino alla fine dell'oggetto e si aggiunge la misura all'elenco: le misure si
+   sommano, così un oggetto più lungo del telefono si misura a passi. Lo schermo resta tutto per il metro. */
+(function (root) {
+  'use strict';
+  const HT = root.HT;
+  const { h, icon } = HT;
+  const KEY = 'ht-metro';
+  const CARD_W = 53.98, CARD_H = 85.6;      // carta ID-1 in verticale, nell'angolo dei righelli
+  const SIDE = { v: 'Righello a sinistra', h: 'Righello in alto' };
+  const SVG = 'http://www.w3.org/2000/svg';
+
+  let el = null, s = null;
+  let cal = null;                            // taratura in corso: { pxmm, prev }
+  let parts = null;                          // nodi che cambiano durante il trascinamento
+  const fresh = () => ({ pxmm: null, sig: '', unit: 'cm', side: 'v', pos: { v: 50, h: 30 }, list: [] });
+  const load = () => {
+    const x = { ...fresh(), ...(HT.store.json(KEY, {}) || {}) };
+    x.pos = { ...fresh().pos, ...(x.pos || {}) };
+    if (!Array.isArray(x.list)) x.list = [];
+    return x;
+  };
+  const persist = () => HT.store.put(KEY, s);
+  /* La taratura vale per questo schermo: un backup aperto su un altro telefono (o lo zoom del browser) la annulla. */
+  const sig = () => { const a = [screen.width, screen.height].sort((x, y) => x - y); return `${a[0]}x${a[1]}@${window.devicePixelRatio || 1}`; };
+  const ready = () => !!s.pxmm && s.sig === sig();
+  const k = () => (cal ? cal.pxmm : s.pxmm);
+
+  const nf = [0, 1, 2].map((d) => new Intl.NumberFormat('it-CH', { minimumFractionDigits: d, maximumFractionDigits: d }));
+  /* le misure sono millimetri interi */
+  const fmt = (mm, unit = s.unit) => (unit === 'mm' ? `${nf[0].format(Math.round(mm))} mm` : `${nf[1].format(Math.round(mm) / 10)} cm`);
+  const fmtTotal = (mm) => (s.unit === 'cm' && mm >= 1000 ? `${fmt(mm)} = ${nf[2].format(mm / 1000)} m` : fmt(mm));
+  const total = () => s.list.reduce((a, x) => a + (Number(x.mm) || 0), 0);
+
+  /* ----------------------------- geometria ----------------------------- */
+  const geo = () => {
+    const st = parts && parts.stage;
+    return st ? { W: st.clientWidth, H: st.clientHeight, r: st.getBoundingClientRect() } : { W: 0, H: 0, r: { left: 0, top: 0 } };
+  };
+  const maxMm = (side) => { const g = geo(); return Math.max(0, Math.floor((side === 'v' ? g.H : g.W) / k())); };
+  /* «Passo intero»: l'ultimo centimetro intero del righello, facile da segnare con la matita */
+  const stepMm = (side) => Math.floor(maxMm(side) / 10) * 10;
+  const clampPos = (side, mm) => Math.max(0, Math.min(maxMm(side), Math.round(mm)));
+
+  /* ----------------------------- righelli ----------------------------- */
+  function rulersSvg() {
+    const { W, H } = geo(), px = k();
+    const sw = parts.stripW, sh = parts.stripH;
+    const svg = document.createElementNS(SVG, 'svg');
+    svg.setAttribute('class', 'mt-svg');
+    svg.setAttribute('width', W); svg.setAttribute('height', H);
+    svg.setAttribute('aria-hidden', 'true');
+    const p = { mm: '', half: '', cm: '' };
+    const tick = (i) => (i % 10 === 0 ? ['cm', 24] : i % 5 === 0 ? ['half', 16] : ['mm', 9]);
+    let labels = '';
+    const lab = (i) => (s.unit === 'mm' ? String(i) : String(i / 10));
+    for (let i = 0, n = Math.floor(H / px); i <= n; i++) {
+      const y = (i * px).toFixed(2), [c, len] = tick(i);
+      p[c] += `M0 ${y}h${len}`;
+      /* nell'angolo comune i numeri dei due righelli si scontrerebbero: lì restano solo le tacche */
+      if (c === 'cm' && i && i * px > sh + 6) labels += `<text class="mt-n" x="${len + 5}" y="${y}" dy=".35em">${lab(i)}</text>`;
+    }
+    for (let i = 0, n = Math.floor(W / px); i <= n; i++) {
+      const x = (i * px).toFixed(2), [c, len] = tick(i);
+      p[c] += `M${x} 0v${len}`;
+      if (c === 'cm' && i && i * px > sw + 12) labels += `<text class="mt-n" x="${x}" y="${len + 14}" text-anchor="middle">${lab(i)}</text>`;
+    }
+    svg.innerHTML = `<rect class="mt-strip" x="0" y="0" width="${sw}" height="${H}"/><rect class="mt-strip" x="0" y="0" width="${W}" height="${sh}"/>`
+      + `<path class="mt-edge" d="M${sw - .5} ${sh}V${H}M${sw} ${sh - .5}H${W}"/>`
+      + `<path class="mt-t mm" d="${p.mm}"/><path class="mt-t half" d="${p.half}"/><path class="mt-t cm" d="${p.cm}"/>${labels}`
+      + `<text class="mt-unit" x="${sw / 2}" y="${sh / 2}" dy=".35em" text-anchor="middle">${s.unit}</text>`;
+    return svg;
+  }
+
+  /* segno, valore accanto al segno e lettura grande */
+  function syncMarker() {
+    if (!parts || cal || !geo().W) return;
+    const side = s.side, px = k(), mm = clampPos(side, s.pos[side]);
+    s.pos[side] = mm;
+    const at = mm * px;
+    parts.line.className = 'mt-line ' + side;
+    parts.line.style.transform = side === 'v' ? `translateY(${at}px)` : `translateX(${at}px)`;
+    parts.pill.className = 'mt-pill ' + side;
+    parts.pill.textContent = fmt(mm);
+    parts.pill.style.transform = side === 'v' ? `translate(${parts.stripW + 10}px, ${at}px)` : `translate(${at}px, ${parts.stripH + 10}px)`;
+    parts.read.textContent = fmt(mm);
+    parts.addBtn.lastChild.textContent = `Aggiungi ${fmt(mm)}`;
+    parts.addBtn.disabled = mm <= 0;
+    parts.stepBtn.lastChild.textContent = `Passo intero · ${fmt(stepMm(side))}`;
+    for (const sl of [parts.sv, parts.sh]) {
+      const sd = sl.dataset.side;
+      sl.setAttribute('aria-valuemax', String(maxMm(sd)));
+      sl.setAttribute('aria-valuenow', String(clampPos(sd, s.pos[sd])));
+      sl.setAttribute('aria-valuetext', fmt(clampPos(sd, s.pos[sd])));
+    }
+    for (const r of parts.sideSeg.querySelectorAll('input')) r.checked = r.value === side;
+  }
+  const savePos = HT.debounce(persist, 400);
+  function setPos(side, mm) {
+    s.side = side;
+    s.pos[side] = clampPos(side, mm);
+    syncMarker();
+    savePos();
+  }
+
+  /* trascinare sul righello; durante la taratura si trascina in qualsiasi punto fuori dal pannello
+     (la carta vera copre il riquadro: si allarga o si stringe con un movimento orizzontale) */
+  function attachDrag(stage) {
+    let drag = null, from = null;
+    const at = (e) => { const r = stage.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; };
+    stage.addEventListener('pointerdown', (e) => {
+      const p = at(e);
+      if (cal) {
+        if (e.target.closest('.mt-cal')) return;
+        drag = 'cal';
+        from = { x: p.x, w: CARD_W * cal.pxmm };
+      } else {
+        const inV = p.x <= parts.stripW, inH = p.y <= parts.stripH;
+        if (!inV && !inH) return;
+        drag = inV && inH ? s.side : inV ? 'v' : 'h';
+        (drag === 'v' ? parts.sv : parts.sh).focus({ preventScroll: true });
+      }
+      e.preventDefault();
+      stage.setPointerCapture(e.pointerId);
+      if (drag !== 'cal') move(e);
+    });
+    const move = (e) => {
+      if (!drag) return;
+      const p = at(e);
+      if (drag === 'cal') setCal((from.w + p.x - from.x) / CARD_W);
+      else setPos(drag, (drag === 'v' ? p.y : p.x) / k());
+    };
+    stage.addEventListener('pointermove', move);
+    const end = () => { drag = null; };
+    stage.addEventListener('pointerup', end);
+    stage.addEventListener('pointercancel', end);
+  }
+
+  /* il righello si usa anche con la tastiera: è un cursore (slider) */
+  function slider(side) {
+    const sl = h('div', { class: 'mt-hit ' + side, role: 'slider', tabindex: '0', 'data-side': side, 'aria-label': SIDE[side], 'aria-orientation': side === 'v' ? 'vertical' : 'horizontal', 'aria-valuemin': '0' });
+    sl.addEventListener('focus', () => { if (s.side !== side) { s.side = side; syncMarker(); persist(); } });
+    sl.addEventListener('keydown', (e) => {
+      const step = { ArrowUp: -1, ArrowLeft: -1, ArrowDown: 1, ArrowRight: 1, PageUp: -10, PageDown: 10 }[e.key];
+      const cur = clampPos(side, s.pos[side]);
+      if (step) setPos(side, cur + step);
+      else if (e.key === 'Home') setPos(side, 0);
+      else if (e.key === 'End') setPos(side, maxMm(side));
+      else return;
+      e.preventDefault();
+    });
+    return sl;
+  }
+
+  /* ----------------------------- elenco ----------------------------- */
+  function add(mm) {
+    if (!(mm > 0)) return;
+    s.list.push({ id: HT.uid(), mm: Math.round(mm), label: '' });
+    persist();
+    drawList();
+  }
+  function drawList() {
+    if (!parts) return;
+    const n = s.list.length, tot = total();
+    parts.total.textContent = fmtTotal(tot);
+    parts.count.textContent = n ? `${n} ${n === 1 ? 'misura' : 'misure'}` : '';
+    parts.clear.disabled = !n;
+    parts.copy.disabled = !n;
+    parts.list.replaceChildren(...(n ? s.list.map((m, i) => {
+      const inp = h('input', { class: 'inp mt-lab', value: m.label || '', placeholder: `Misura ${i + 1}`, 'aria-label': `Nome della misura ${i + 1}`, autocomplete: 'off', maxlength: '60' });
+      inp.addEventListener('input', () => { m.label = inp.value; savePos(); });
+      return h('li', { class: 'mt-row' },
+        h('span', { class: 'mt-i', 'aria-hidden': 'true' }, String(i + 1)),
+        inp,
+        h('span', { class: 'mt-v' }, fmt(m.mm)),
+        HT.iconBtn('trash', `Elimina la misura ${i + 1} (${fmt(m.mm)})`, () => {
+          s.list.splice(i, 1); persist(); drawList();
+          const next = parts.list.querySelectorAll('.mt-row .icon-btn')[Math.min(i, s.list.length - 1)];
+          (next || parts.addBtn).focus();
+        }, 'mt-del'));
+    }) : [h('li', { class: 'mt-empty' }, 'Ancora nessuna misura. Trascina il segno sul righello fino alla fine dell\'oggetto e tocca «Aggiungi».')]));
+  }
+  function copyList() {
+    const lines = s.list.map((m, i) => `${m.label || 'Misura ' + (i + 1)}\t${fmt(m.mm)}`);
+    lines.push(`Totale\t${fmtTotal(total())}`);
+    const txt = lines.join('\n');
+    (navigator.clipboard ? navigator.clipboard.writeText(txt) : Promise.reject()).then(() => HT.toast('Elenco copiato.'), () => HT.toast('Non riesco a copiare: il browser non lo permette.', true));
+  }
+
+  /* ----------------------------- taratura ----------------------------- */
+  function startCal() {
+    /* prima stima: 96 punti per pollice sul computer, circa 6 punti per millimetro sul telefono */
+    const guess = HT.touch() ? 6.05 : 96 / 25.4;
+    cal = { pxmm: ready() ? s.pxmm : (s.pxmm || guess), prev: ready() };
+    draw();
+  }
+  function setCal(v) {
+    if (!cal || !isFinite(v)) return;
+    cal.pxmm = Math.max(2, Math.min(14, v));
+    const { W, H } = geo();
+    parts.card.style.width = `${CARD_W * cal.pxmm}px`;
+    parts.card.style.height = `${CARD_H * cal.pxmm}px`;
+    parts.card.style.borderRadius = `${3.18 * cal.pxmm}px`;   // angoli della carta: raggio 3,18 mm
+    parts.calRange.value = String(cal.pxmm);
+    parts.calRange.setAttribute('aria-valuetext', `${nf[2].format(cal.pxmm)} punti per millimetro`);
+    const old = parts.stage.querySelector('.mt-svg');
+    if (old && W && H) old.replaceWith(rulersSvg());
+  }
+  function endCal(save) {
+    if (save) { s.pxmm = Math.round(cal.pxmm * 1000) / 1000; s.sig = sig(); persist(); }
+    const wasReady = cal.prev || save;
+    cal = null;
+    if (!wasReady) { location.hash = '#/'; return; }
+    draw();
+    if (save) HT.toast('Metro tarato: ora misura in centimetri veri.');
+  }
+  function calPanel() {
+    const range = h('input', { type: 'range', class: 'mt-range', min: '2', max: '14', step: '0.005', value: String(cal.pxmm), 'aria-label': 'Grandezza della carta sullo schermo' });
+    range.addEventListener('input', () => setCal(Number(range.value)));
+    parts.calRange = range;
+    const fine = (f, name, label) => HT.iconBtn(name, label, () => setCal(cal.pxmm * f), 'mt-nudge');
+    const diag = h('input', { class: 'inp', id: 'mtDiag', inputmode: 'decimal', placeholder: 'Es. 6,1', autocomplete: 'off' });
+    const useDiag = () => {
+      const d = HT.num(diag.value);
+      if (!(d > 2 && d < 40)) { HT.toast('Scrivi la diagonale in pollici, per esempio 6,1.', true); diag.focus(); return; }
+      setCal(Math.hypot(screen.width, screen.height) / (d * 25.4));
+      HT.toast('Calcolato dalla diagonale: controlla con la carta o con un righello.');
+    };
+    diag.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); useDiag(); } });
+    return h('section', { class: 'mt-cal', 'aria-labelledby': 'mtCalH' },
+      h('h2', { class: 'tool-h mt-cal-h', id: 'mtCalH', tabindex: '-1' }, 'Taratura del metro'),
+      h('p', { class: 'mt-cal-p' }, 'Appoggia una carta in formato bancomat (carta di credito, tessera della cassa malati, licenza di condurre) nell\'angolo in alto a sinistra dello schermo. Trascina il bordo del riquadro blu finché sparisce proprio sotto la carta.'),
+      h('div', { class: 'mt-cal-row' }, fine(1 / 1.002, 'zoomOut', 'Rimpicciolisci un poco'), range, fine(1.002, 'zoomIn', 'Ingrandisci un poco')),
+      h('details', { class: 'mt-more' },
+        h('summary', null, 'Non hai una carta?'),
+        h('div', { class: 'mt-diag' },
+          h('label', { class: 'fld-l', for: 'mtDiag' }, 'Diagonale dello schermo (pollici)'),
+          h('div', { class: 'mt-diag-row' }, diag, HT.btn('Usa', useDiag, { cls: 'sm' })),
+          h('p', { class: 'fld-h' }, 'La trovi nelle caratteristiche del telefono. Puoi anche usare un righello vero: confronta i centimetri sul bordo e regola.'))),
+      h('div', { class: 'mt-cal-act' },
+        HT.btn(cal.prev ? 'Annulla' : 'Esci', () => endCal(false), { cls: 'ghost' }),
+        HT.btn('Fatto', () => endCal(true), { cls: 'primary', icon: 'check' })));
+  }
+
+  /* ----------------------------- disegno ----------------------------- */
+  function draw() {
+    if (!el || el.hidden) return;
+    if (!ready() && !cal) { startCal(); return; }
+    const stage = h('div', { class: 'mt-stage' });
+    parts = { stage, stripW: 58, stripH: 50 };
+    el.replaceChildren(h('div', { class: 'metro' + (cal ? ' calibrating' : '') }, stage));
+    if (cal) {
+      parts.card = h('div', { class: 'mt-card', 'aria-hidden': 'true' }, h('span', null, 'Carta'));
+      stage.append(rulersSvg(), parts.card, calPanel());
+      attachDrag(stage);
+      setCal(cal.pxmm);
+      parts.stage.querySelector('#mtCalH').focus({ preventScroll: true });
+      return;
+    }
+    parts.sv = slider('v'); parts.sh = slider('h');
+    parts.line = h('div', { class: 'mt-line', 'aria-hidden': 'true' });
+    parts.pill = h('div', { class: 'mt-pill', 'aria-hidden': 'true' });
+    parts.read = h('output', { class: 'mt-read', 'aria-live': 'polite' });
+    parts.addBtn = h('button', { type: 'button', class: 'btn primary lg mt-add', onclick: () => add(s.pos[s.side]) }, icon('plus'), h('span'));
+    parts.stepBtn = h('button', { type: 'button', class: 'btn mt-step', onclick: () => { const mm = stepMm(s.side); setPos(s.side, mm); add(mm); } }, icon('ruler'), h('span'));
+    parts.sideSeg = HT.seg('mtside', [['v', 'A sinistra'], ['h', 'In alto']], s.side, (v) => { s.side = v; persist(); syncMarker(); }, 'Righello da usare');
+    parts.total = h('strong', { class: 'mt-tot-v' });
+    parts.count = h('span', { class: 'mt-tot-n' });
+    parts.list = h('ol', { class: 'mt-list', role: 'list' });
+    parts.copy = HT.btn('Copia', copyList, { cls: 'sm ghost', icon: 'copy' });
+    parts.clear = HT.btn('Azzera', () => {
+      if (!s.list.length || !confirm('Eliminare tutte le misure dell\'elenco?')) return;
+      s.list = []; persist(); drawList(); parts.addBtn.focus();
+    }, { cls: 'sm ghost danger', icon: 'trash' });
+    const nudge = (d, name, label) => HT.iconBtn(name, label, () => setPos(s.side, clampPos(s.side, s.pos[s.side]) + d), 'mt-nudge');
+
+    const body = h('div', { class: 'mt-body' },
+      h('div', { class: 'mt-top' },
+        h('a', { class: 'icon-btn mt-back', href: '#/', 'aria-label': 'Chiudi il metro e torna al menu', title: 'Menu' }, icon('left')),
+        h('h2', { class: 'tool-h mt-h', tabindex: '-1' }, 'Metro'),
+        HT.seg('mtunit', [['cm', 'cm'], ['mm', 'mm']], s.unit, (v) => { s.unit = v; persist(); draw(); }, 'Unità di misura'),
+        HT.iconBtn('target', 'Tara di nuovo il metro', startCal, 'mt-calbtn')),
+      h('section', { class: 'mt-measure', 'aria-label': 'Misura' },
+        parts.sideSeg,
+        h('div', { class: 'mt-read-row' }, nudge(-1, 'minus', 'Un millimetro in meno'), parts.read, nudge(1, 'plus', 'Un millimetro in più')),
+        parts.addBtn, parts.stepBtn,
+        h('p', { class: 'mt-hint' }, 'Oggetto più lungo del telefono? Tocca «Passo intero», segna con la matita dove finisce il righello, sposta lo 0 sul segno e continua. Le misure si sommano qui sotto.')),
+      h('section', { class: 'mt-sum', 'aria-labelledby': 'mtSumH' },
+        h('div', { class: 'mt-tot', 'aria-live': 'polite' }, h('h3', { id: 'mtSumH' }, 'Totale'), parts.total, parts.count),
+        parts.list,
+        h('div', { class: 'row-act' }, parts.copy, parts.clear)));
+    stage.append(rulersSvg(), body, parts.line, parts.pill, parts.sv, parts.sh);
+    attachDrag(stage);
+    syncMarker();
+    drawList();
+  }
+
+  /* girando il telefono o cambiando la finestra i righelli si ridisegnano */
+  const redraw = HT.debounce(() => {
+    if (!el || el.hidden || !parts) return;
+    const old = parts.stage.querySelector('.mt-svg');
+    if (old) old.replaceWith(rulersSvg());
+    if (cal) setCal(cal.pxmm); else syncMarker();
+  }, 120);
+  window.addEventListener('resize', redraw);
+
+  HT.ready(() => { s = load(); });
+  HT.register({
+    id: 'metro', title: 'Metro', group: 'util', icon: 'ruler',
+    desc: 'Righello sullo schermo: misura, aggiungi e somma più passi', keywords: 'metro righello misura misurare lunghezza centimetri millimetri cm mm ruler',
+    actions: [{ label: 'Tara il metro', keywords: 'taratura carta calibra righello', href: '#/metro', run: () => { if (!cal) startCal(); } }],
+    mount(node) { el = node; },
+    show() { if (!s) s = load(); document.documentElement.classList.add('metro-on'); draw(); },
+    hide() { document.documentElement.classList.remove('metro-on'); cal = null; parts = null; },
+    reload() { s = load(); if (el && !el.hidden) draw(); }
+  });
+})(typeof self !== 'undefined' ? self : this);
+
+</script>
+<script>/* messaggi */
+/* HelpfulTool — Messaggi: avvisi dell'autore a chi usa l'app. Solo nella versione per telefono pubblicata
+   online (window.HT_MESSAGES, scritto da tools/phone.mjs): l'app legge messages.json dal proprio sito,
+   senza inviare nulla. Il file offline per il computer non si collega mai alla rete e qui non fa niente.
+   Formato: { "messages": [{ "id", "date": "AAAA-MM-GG", "title", "text", "link"?: { "url", "label" }, "until"?: "AAAA-MM-GG" }] } */
+(function (root) {
+  'use strict';
+  const HT = root.HT;
+  const SRC = root.HT_MESSAGES;
+  if (!SRC) return;
+  const { h, icon } = HT;
+  const K_LIST = 'ht-msgs', K_READ = 'ht-msgs-read', K_CHECK = 'ht-msgs-check';
+  const EVERY = 5 * 60000;
+  let el = null, busy = false, lastTry = 0, offline = false;
+
+  /* Solo testo e link https: il contenuto non diventa mai HTML. */
+  const str = (v, max) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
+  const isDay = (v) => /^\d{4}-\d{2}-\d{2}$/.test(v || '');
+  function clean(m) {
+    if (!m || typeof m !== 'object') return null;
+    const out = { id: str(m.id, 80), date: isDay(m.date) ? m.date : '', title: str(m.title, 140), text: str(m.text, 4000) };
+    if (!out.id || (!out.title && !out.text)) return null;
+    if (isDay(m.until)) out.until = m.until;
+    if (m.link && typeof m.link.url === 'string') {
+      try {
+        const u = new URL(m.link.url);
+        if (u.protocol === 'https:') out.link = { url: u.href, label: str(m.link.label, 60) || 'Apri il link' };
+      } catch (e) { /* link non valido: si ignora */ }
+    }
+    return out;
+  }
+  const all = () => (HT.store.json(K_LIST, []) || [])
+    .filter((m) => !m.until || m.until >= HT.today())
+    .sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+  const readSet = () => new Set(HT.store.json(K_READ, []) || []);
+  const unread = () => { const r = readSet(); return all().filter((m) => !r.has(m.id)); };
+  function markRead(ids) {
+    const r = readSet();
+    let changed = false;
+    for (const id of ids) if (!r.has(id)) { r.add(id); changed = true; }
+    if (!changed) return;
+    /* si tengono solo gli id dei messaggi ancora pubblicati */
+    const live = new Set((HT.store.json(K_LIST, []) || []).map((m) => m.id));
+    HT.store.put(K_READ, [...r].filter((id) => live.has(id)));
+  }
+
+  async function check(force) {
+    if (busy || (!force && Date.now() - lastTry < EVERY)) return;
+    busy = true; lastTry = Date.now();
+    try {
+      /* il parametro cambia ogni minuto: così la copia in cache del sito non ritarda i messaggi */
+      const r = await fetch(`${SRC}?m=${Math.floor(Date.now() / 60000)}`, { cache: 'no-store' });
+      let list;
+      if (r.status === 404) list = [];
+      else if (r.ok) { const j = await r.json(); list = (Array.isArray(j) ? j : (j && j.messages) || []).map(clean).filter(Boolean); }
+      else throw new Error('HTTP ' + r.status);
+      offline = false;
+      HT.store.set(K_CHECK, new Date().toISOString());
+      const before = JSON.stringify(HT.store.json(K_LIST, []) || []);
+      if (JSON.stringify(list) !== before) HT.store.put(K_LIST, list);
+      refresh();
+    } catch (e) {
+      offline = true;
+      if (el && !el.hidden) drawPage();
+    } finally { busy = false; }
+  }
+
+  /* ----------------------------- striscia nel menu ----------------------------- */
+  function banner() {
+    const list = unread();
+    if (!list.length) return null;
+    const m = list[0];
+    const more = list.length - 1;
+    return h('section', { class: 'msg-banner', 'aria-labelledby': 'msgBanT' },
+      h('span', { class: 'msg-ico' }, icon('megaphone')),
+      h('div', { class: 'msg-txt' },
+        h('p', { class: 'msg-meta' }, 'Messaggio', m.date ? ' · ' + HT.dmy(m.date) : ''),
+        h('h2', { id: 'msgBanT', class: 'msg-t' }, m.title || 'Nuovo messaggio'),
+        m.text ? h('p', { class: 'msg-body' }, m.text) : null,
+        h('div', { class: 'msg-act' },
+          m.link ? h('a', { class: 'btn sm primary', href: m.link.url, target: '_blank', rel: 'noopener noreferrer' }, m.link.label, icon('arrowRight')) : null,
+          h('a', { class: 'btn sm ghost', href: '#/messaggi' }, more ? `Tutti i messaggi · ${more} ${more === 1 ? 'altro nuovo' : 'altri nuovi'}` : 'Tutti i messaggi'))),
+      HT.iconBtn('x', 'Segna come letto e chiudi', () => {
+        markRead([m.id]);
+        refresh();
+        const next = document.querySelector('#homeMsgs .msg-banner .msg-x, #homeT');
+        if (next) next.focus({ preventScroll: true });
+      }, 'msg-x'));
+  }
+  /* il menu ha un posto fisso (#homeMsgs): qui si aggiorna senza ridisegnare tutto il menu */
+  function refresh() {
+    const slot = document.getElementById('homeMsgs');
+    if (slot) slot.replaceChildren(banner());
+    if (el && !el.hidden) drawPage();
+  }
+
+  /* ----------------------------- pagina Messaggi ----------------------------- */
+  function drawPage() {
+    const list = all();
+    const r = readSet();
+    const last = HT.store.get(K_CHECK);
+    const when = last ? new Date(last) : null;
+    const status = offline
+      ? 'Senza rete: vedi i messaggi già ricevuti.'
+      : when ? `Ultimo controllo: ${when.toLocaleDateString('it-CH')} alle ${when.toLocaleTimeString('it-CH', { hour: '2-digit', minute: '2-digit' })}` : 'Controllo in corso…';
+    el.replaceChildren(h('div', { class: 'tool-wrap msg-page' },
+      HT.toolHead('Messaggi', 'Avvisi dell\'autore di HelpfulTool. Arrivano quando il telefono è collegato a Internet; nessun tuo dato viene inviato.',
+        HT.btn('Controlla ora', () => { HT.toast('Controllo dei messaggi…'); check(true); }, { cls: 'sm', icon: 'refresh' })),
+      h('p', { class: 'msg-status', role: 'status' }, status),
+      list.length ? h('ol', { class: 'msg-list', role: 'list' }, list.map((m) => {
+        const isNew = !r.has(m.id);
+        return h('li', { class: 'msg-it' + (isNew ? ' new' : '') },
+          h('p', { class: 'msg-meta' }, isNew ? h('span', { class: 'msg-new' }, 'Nuovo') : null, m.date ? HT.dmy(m.date) : '', m.until ? ` · fino al ${HT.dmy(m.until)}` : ''),
+          h('h3', { class: 'msg-t' }, m.title || 'Messaggio'),
+          m.text ? h('p', { class: 'msg-body full' }, m.text) : null,
+          m.link ? h('p', { class: 'msg-act' }, h('a', { class: 'btn sm', href: m.link.url, target: '_blank', rel: 'noopener noreferrer' }, m.link.label, icon('arrowRight'))) : null);
+      })) : h('p', { class: 'empty-teach big' }, 'Nessun messaggio per ora. Quando ne arriva uno lo vedi in cima al menu.')));
+    /* aperta la pagina, i messaggi sono letti (restano evidenziati finché si resta qui) */
+    markRead(list.map((m) => m.id));
+    const slot = document.getElementById('homeMsgs');
+    if (slot) slot.replaceChildren(banner());
+  }
+
+  HT.ready(() => setTimeout(() => check(true), 600));
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') check(false); });
+  window.addEventListener('online', () => check(true));
+
+  root.HTMessages = { banner, check, unread };
+  HT.register({
+    id: 'messaggi', title: 'Messaggi', group: null, icon: 'megaphone', desc: 'Avvisi dell\'autore di HelpfulTool',
+    actions: [{ label: 'Messaggi', keywords: 'messaggi avvisi notizie annunci', href: '#/messaggi' }],
+    mount(node) { el = node; },
+    show() { drawPage(); check(false); },
+    reload() { if (el && !el.hidden) drawPage(); }
   });
 })(typeof self !== 'undefined' ? self : this);
 
