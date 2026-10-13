@@ -1,11 +1,3 @@
 {
-  "messages": [
-    {
-      "id": "2026-10-13-omtae",
-      "date": "2026-10-13",
-      "title": "Test 1",
-      "text": "Notifica di test",
-      "until": "2026-10-13"
-    }
-  ]
+  "messages": []
 }
