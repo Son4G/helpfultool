@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval' blob:; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src data: blob:; connect-src 'self' data: blob:; worker-src 'self' blob:; media-src blob: mediastream:; base-uri 'none'; form-action 'none'; manifest-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval' blob:; style-src 'unsafe-inline'; img-src 'self' data: blob: https://imgproxy-retcat.assets.schwarz https://dm.emea.cms.aldi.cx; font-src data: blob:; connect-src 'self' data: blob:; worker-src 'self' blob:; media-src blob: mediastream:; base-uri 'none'; form-action 'none'; manifest-src 'self'">
 <meta name="color-scheme" content="light dark">
 <title>HelpfulTool</title>
 <link rel="manifest" href="manifest.webmanifest">
@@ -2638,7 +2638,7 @@ html.metro-on, html.metro-on body { overflow: hidden; overscroll-behavior: none;
 }
 
 /* Offerte (src/tools/offerte.js): elenco tranquillo come un listino; il colore solo per il risparmio. */
-.of-page { max-width: 880px; }
+.of-page { max-width: 1040px; }
 .of-bar { display: flex; flex-direction: column; gap: 12px; margin: 18px 0 6px; }
 .of-search { position: relative; max-width: 520px; }
 .of-search > .i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: var(--ink-3); pointer-events: none; }
@@ -2650,7 +2650,7 @@ html.metro-on, html.metro-on body { overflow: hidden; overscroll-behavior: none;
 .of-filters .chip[aria-pressed="true"] .i { display: inline-block; }
 .of-count { margin: 8px 0 0; color: var(--ink-3); font-size: var(--fs-sm); font-variant-numeric: tabular-nums; min-height: 1.4em; }
 
-.of-group { margin-top: 26px; }
+.of-group { margin-top: 30px; }
 /* la barra in alto scorre via con la pagina: il titolo del gruppo resta attaccato al bordo dello schermo */
 .of-gh { position: sticky; top: 0; z-index: 1; display: flex; align-items: baseline; gap: 10px; margin: 0; padding: 10px 0 9px;
   background: var(--bg); border-bottom: 1px solid var(--line-strong); font: 700 var(--fs-md)/1.35 var(--font-head); color: var(--ink); }
@@ -2660,25 +2660,49 @@ html.metro-on, html.metro-on body { overflow: hidden; overscroll-behavior: none;
   font: 600 12px/1.4 var(--font); letter-spacing: .02em; text-transform: uppercase; vertical-align: 1px; }
 .of-gh .of-store { background: var(--accent); color: var(--accent-ink); }
 
-.of-list { list-style: none; margin: 0; padding: 0; }
+/* ogni gruppo è un foglio unico (come un volantino); le righe dentro sono solo separate da una linea */
+.of-list { list-style: none; margin: 10px 0 0; padding: 4px 18px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg) var(--r-lg) 0 0; box-shadow: var(--shadow-1); }
+.of-list:last-child { border-radius: var(--r-lg); }
 .of-it + .of-it { border-top: 1px solid var(--line); }
-.of-a { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 18px; align-items: start; padding: 12px 6px; margin: 0 -6px;
-  color: inherit; text-decoration: none; border-radius: var(--r); transition: background var(--t-fast) var(--ease); }
-a.of-a:hover { background: var(--surface-2); }
-a.of-a:active { background: var(--surface-3); }
-a.of-a:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
-.of-main { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
-.of-name { font-size: var(--fs-md); line-height: 1.4; color: var(--ink); overflow-wrap: anywhere; }
-.of-brand { font-weight: 600; font-size: var(--fs-sm); letter-spacing: .01em; color: var(--ink-2); }
+.of-a { display: grid; grid-template-columns: 84px minmax(0, 1fr) auto; gap: 6px 16px; align-items: center; padding: 14px 0;
+  color: inherit; text-decoration: none; transition: opacity var(--t-fast) var(--ease); }
+a.of-a:hover .of-name { color: var(--accent-text); }
+a.of-a:active { opacity: .7; }
+a.of-a:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: var(--r); }
+
+/* foto: sempre su fondo bianco (le foto dei negozi lo hanno), anche nel tema scuro */
+.of-pic { position: relative; display: grid; place-items: center; width: 84px; height: 84px; border-radius: var(--r); background: #fff; border: 1px solid var(--line); overflow: hidden; }
+.of-pic img { position: relative; z-index: 1; width: 100%; height: 100%; object-fit: contain; padding: 5px; box-sizing: border-box; }
+.of-pic-ph { position: absolute; width: 26px; height: 26px; color: #b4c6d6; }
+.of-pic .of-pct { position: absolute; z-index: 2; left: 4px; bottom: 4px; padding: 2px 6px; border-radius: var(--r-sm); background: var(--ins-line); color: #fff;
+  font-weight: 700; font-size: 12px; line-height: 1.25; font-variant-numeric: tabular-nums; box-shadow: 0 1px 2px rgba(16, 41, 59, .2); }
+
+.of-main { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.of-name { font-size: var(--fs-md); line-height: 1.38; color: var(--ink); overflow-wrap: anywhere; transition: color var(--t-fast) var(--ease);
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.of-brand { display: block; font-weight: 600; font-size: 12px; letter-spacing: .04em; text-transform: uppercase; color: var(--ink-3); }
 .of-meta { color: var(--ink-3); font-size: var(--fs-xs); line-height: 1.45; font-variant-numeric: tabular-nums; }
-.of-price { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.of-now { font-size: var(--fs-lg); font-weight: 600; line-height: 1.2; color: var(--ink); }
-.of-now small { font-size: var(--fs-xs); font-weight: 500; color: var(--ink-3); }
-.of-was { display: flex; align-items: center; gap: 6px; font-size: var(--fs-xs); color: var(--ink-3); }
+.of-price { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; align-self: center; }
+.of-now { font-size: 21px; font-weight: 600; line-height: 1.15; letter-spacing: -.01em; color: var(--ink); }
+.of-now small { font-size: var(--fs-xs); font-weight: 500; letter-spacing: 0; color: var(--ink-3); }
+.of-was { font-size: var(--fs-xs); color: var(--ink-3); }
 .of-was del { background: none; color: inherit; padding: 0; text-decoration: line-through; text-decoration-thickness: 1px; }
-.of-pct { padding: 1px 7px; border-radius: var(--pill); background: var(--ins-bg); color: var(--ins-ink); font-weight: 700; font-size: 12px; }
-.of-plus { font-size: 12px; font-weight: 600; color: var(--accent-text); }
-.of-more { margin: 10px 0 0; }
+.of-plus { margin-top: 2px; padding: 1px 6px; border-radius: var(--r-sm); background: var(--accent-soft); color: var(--accent-text); font-size: 11.5px; font-weight: 600; }
+
+/* «Mostra altre»: chiude il foglio del gruppo, tutta la larghezza per il pollice */
+.of-more { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; min-height: 48px; margin: 0; padding: 0 16px;
+  background: var(--surface-2); border: 1px solid var(--line); border-top: 0; border-radius: 0 0 var(--r-lg) var(--r-lg);
+  color: var(--accent-text); font: 600 var(--fs-sm)/1 var(--font); cursor: pointer; transition: background var(--t-fast) var(--ease); }
+.of-more:hover { background: var(--surface-3); }
+.of-more:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.of-more .i { width: 16px; height: 16px; }
+
+/* schermo largo: due colonne dentro il foglio */
+@media (min-width: 900px) {
+  .of-list { display: grid; grid-template-columns: 1fr 1fr; column-gap: 32px; }
+  .of-it + .of-it { border-top: 0; }
+  .of-it:nth-child(n + 3) { border-top: 1px solid var(--line); }
+}
 
 .of-foot { margin-top: 40px; padding-top: 18px; border-top: 1px solid var(--line); }
 .of-foot p { margin: 8px 0 0; max-width: 70ch; color: var(--ink-3); font-size: var(--fs-sm); line-height: 1.55; }
@@ -2689,7 +2713,10 @@ a.of-a:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
   .of-filters .seg label { flex: 1; }
   .of-filters .seg span { justify-content: center; padding: 0 10px; min-height: 40px; }
   .of-gh { font-size: 15.5px; }
-  .of-a { gap: 4px 12px; padding: 12px 4px; margin: 0 -4px; }
+  .of-list { padding: 2px 12px; }
+  .of-a { grid-template-columns: 68px minmax(0, 1fr) auto; gap: 4px 12px; padding: 12px 0; }
+  .of-pic { width: 68px; height: 68px; }
+  .of-now { font-size: 19px; }
   .of-name { font-size: 15.5px; }
 }
 
@@ -34870,7 +34897,7 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
   const { h, icon } = HT;
   const K_DATA = 'ht-deals-data', K_CHECK = 'ht-deals-check', K_DAY = 'ht-deals-day', K_OPT = 'ht-deals-opt';
   const EVERY = 60 * 60000;
-  const PAGE = 40;
+  const PAGE = 6;
   let el = null, busy = false, lastTry = 0, offline = false;
   const view = { store: 'all', when: 'now', q: '', sale: false };
   const opened = new Set();
@@ -34880,11 +34907,13 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
   const isDay = (v) => /^\d{4}-\d{2}-\d{2}$/.test(v || '');
   const price = (v) => (typeof v === 'number' && isFinite(v) && v >= 0 ? Math.round(v * 100) / 100 : null);
   const HOSTS = /^https:\/\/www\.(lidl\.ch|aldi-suisse\.ch)\//;
+  const IMG = /^https:\/\/(imgproxy-retcat\.assets\.schwarz|dm\.emea\.cms\.aldi\.cx)\//;
   function clean(it) {
     if (!it || typeof it !== 'object') return null;
     const out = { id: str(it.id, 80), brand: str(it.brand, 60), name: str(it.name, 160), size: str(it.size, 60), unit: str(it.unit, 60),
       price: price(it.price), per: str(it.per, 20), old: price(it.old), plus: it.plus === true,
-      from: isDay(it.from) ? it.from : '', to: isDay(it.to) ? it.to : '', group: str(it.group, 120), url: HOSTS.test(it.url || '') ? it.url : '' };
+      from: isDay(it.from) ? it.from : '', to: isDay(it.to) ? it.to : '', group: str(it.group, 120), url: HOSTS.test(it.url || '') ? it.url : '',
+      img: IMG.test(it.img || '') ? it.img : '' };
     if (!out.id || !out.name || out.price === null || !out.from) return null;
     if (out.old !== null && out.old <= out.price) out.old = null;
     out.pct = typeof it.pct === 'number' && it.pct > 0 && it.pct < 100 ? Math.round(it.pct) : out.old ? Math.round((1 - out.price / out.old) * 100) : null;
@@ -34969,15 +34998,22 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
     const today = HT.today();
     const when = it.from > today ? `da ${wdm(it.from)}` : it.to ? (it.to === today ? 'ultimo giorno oggi' : `fino a ${wdm(it.to)}`) : 'fino a esaurimento';
     const meta = [it.size, it.unit, when].filter(Boolean);
+    /* foto dal sito del negozio; se non si carica resta il riquadro con l'etichetta */
+    const pic = h('span', { class: 'of-pic', 'aria-hidden': 'true' },
+      it.img ? h('img', { src: it.img, alt: '', loading: 'lazy', decoding: 'async', referrerpolicy: 'no-referrer', onerror: (e) => e.target.remove() }) : null,
+      icon('tag', 'of-pic-ph'),
+      it.pct ? h('span', { class: 'of-pct' }, `−${it.pct}%`) : null);
     const body = [
+      pic,
       h('span', { class: 'of-main' },
         h('span', { class: 'of-name' }, it.brand ? h('span', { class: 'of-brand' }, it.brand + ' ') : null, it.name),
         h('span', { class: 'of-meta' }, meta.join(' · '))),
       h('span', { class: 'of-price' },
-        h('span', { class: 'of-now' }, h('small', null, 'fr. '), fr(it.price), it.per ? h('small', null, ' ' + it.per) : null),
+        h('span', { class: 'of-now' }, h('small', null, 'fr. '), fr(it.price)),
+        it.per ? h('span', { class: 'of-was' }, it.per.replace(/^\//, 'per ')) : null,
         it.old ? h('span', { class: 'of-was' },
-          it.pct ? h('span', { class: 'of-pct' }, `−${it.pct}%`) : null,
-          h('del', null, h('span', { class: 'sr-only' }, 'invece di fr. '), fr(it.old))) : null,
+          h('del', null, h('span', { class: 'sr-only' }, 'invece di fr. '), fr(it.old)),
+          it.pct ? h('span', { class: 'sr-only' }, `, sconto ${it.pct}%`) : null) : null,
         it.plus ? h('span', { class: 'of-plus' }, 'con Lidl Plus') : null)
     ];
     return h('li', { class: 'of-it' }, it.url
@@ -35025,12 +35061,21 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
           sale)) : null,
       d ? h('p', { class: 'of-count', 'aria-live': 'polite' }, n ? `${n} ${n === 1 ? 'offerta' : 'offerte'}` : '') : null,
       gs.length ? h('div', { class: 'of-groups' }, gs.map((g) => {
-        const more = g.items.length > PAGE && !opened.has(g.key);
+        /* poche righe per gruppo; con una ricerca si vede tutto quello che corrisponde */
+        const long = g.items.length > PAGE + 2 && !view.q;
+        const more = long && !opened.has(g.key);
+        const gid = 'ofg-' + g.key.replace(/[^\w]+/g, '-');
         const title = (g.theme && g.theme !== 'Azioni della settimana' ? g.theme : g.store === 'lidl' ? 'Azioni della settimana' : 'Promozioni') + ' · da ' + wdm(g.from);
-        return h('section', { class: 'of-group', 'aria-label': `${g.storeName}: ${title}` },
+        return h('section', { class: 'of-group', id: gid, 'aria-label': `${g.storeName}: ${title}` },
           h('h3', { class: 'of-gh' }, h('span', { class: 'of-store s-' + g.store }, g.storeName), h('span', { class: 'of-gt' }, title), h('span', { class: 'of-gn' }, String(g.items.length))),
           h('ul', { class: 'of-list', role: 'list' }, (more ? g.items.slice(0, PAGE) : g.items).map(row)),
-          more ? h('button', { type: 'button', class: 'btn sm ghost of-more', onclick: () => { opened.add(g.key); draw(); } }, `Mostra tutte le ${g.items.length}`) : null);
+          long ? h('button', { type: 'button', class: 'of-more', 'aria-expanded': more ? 'false' : 'true', onclick: () => {
+            if (more) opened.add(g.key); else opened.delete(g.key);
+            draw();
+            /* chiudendo si torna al titolo del gruppo, non in fondo a un elenco sparito */
+            const sec = document.getElementById(gid);
+            if (sec) { if (!more) sec.scrollIntoView({ block: 'start' }); const b = sec.querySelector('.of-more'); if (b) b.focus({ preventScroll: true }); }
+          } }, more ? `Mostra altre ${g.items.length - PAGE}` : 'Mostra meno', icon(more ? 'down' : 'up')) : null);
       })) : h('p', { class: 'empty-teach big' }, !d
         ? (offline ? 'Le offerte arrivano quando il telefono è collegato a Internet.' : 'Scarico le offerte…')
         : view.q ? `Nessuna offerta per «${view.q}».` : view.when === 'next' ? 'Nessuna offerta annunciata per i prossimi giorni.' : 'Nessuna offerta con questi filtri.'),

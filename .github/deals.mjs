@@ -69,6 +69,7 @@ async function lidl() {
         food: (d.category || (d.keyfacts && d.keyfacts.analyticsCategory)) === 'Food',
         from: day(d.storeStartDate), to,
         group: title,
+        img: /^https:\/\/imgproxy-retcat\.assets\.schwarz\//.test(d.image || '') ? d.image : '',
         url: LIDL + (d.canonicalUrl || d.canonicalPath || p)
       });
     }
@@ -99,6 +100,8 @@ function aldiTiles(html, date) {
     const interval = text((priceBlock.match(/base-price__interval">([^<]*)/) || [])[1]);
     const from = (t.match(/Disponibile dal (\d{2})\.(\d{2})\.(\d{4})/) || []);
     const href = (t.match(/href="(\/it\/prodotto\/[^"]+)"/) || [])[1];
+    /* la foto del prodotto (non i bollini sopra di essa, che sono anche loro immagini) */
+    const img = ent((t.match(/class="product-tile__picture"[\s\S]*?<img[^>]*?\ssrc="(https:\/\/dm\.emea\.cms\.aldi\.cx\/[^"]+)"/) || [])[1] || '');
     out.push({
       id: 'aldi-' + id,
       brand: cls('product-tile__brandname'),
@@ -110,6 +113,7 @@ function aldiTiles(html, date) {
       pct: pct ? +pct[1] : null,
       from: from[3] ? `${from[3]}-${from[2]}-${from[1]}` : date,
       to: null,
+      img,
       url: href ? ALDI + href : `${ALDI}/it/promozioni/${date}`
     });
   }
