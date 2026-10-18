@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval' blob:; style-src 'unsafe-inline'; img-src 'self' data: blob: https://imgproxy-retcat.assets.schwarz https://dm.emea.cms.aldi.cx; font-src data: blob:; connect-src 'self' data: blob:; worker-src 'self' blob:; media-src blob: mediastream:; base-uri 'none'; form-action 'none'; manifest-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval' blob:; style-src 'unsafe-inline'; img-src 'self' data: blob: https://imgproxy-retcat.assets.schwarz https://dm.emea.cms.aldi.cx https://cdn.sanity.io; font-src data: blob:; connect-src 'self' data: blob:; worker-src 'self' blob:; media-src blob: mediastream:; base-uri 'none'; form-action 'none'; manifest-src 'self'">
 <meta name="color-scheme" content="light dark">
 <title>HelpfulTool</title>
 <link rel="manifest" href="manifest.webmanifest">
@@ -18,6 +18,8 @@
   window.HT_MESSAGES = 'messages.json';
   /* Offerte di Lidl e Aldi: le scrive ogni giorno il lavoro .github/workflows/deals.yml (tools/deals.mjs). */
   window.HT_DEALS = 'deals.json';
+  /* Eventi in Ticino: li scrive ogni giorno lo stesso lavoro (tools/events.mjs). */
+  window.HT_EVENTS = 'events.json';
   /* Copia offline sul telefono: il service worker tiene l'app in memoria dopo la prima apertura. */
   if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
     addEventListener('load', function () {
@@ -1470,6 +1472,7 @@ input[type="date"].inp, input[type="time"].inp { font-variant-numeric: tabular-n
   --g-study: #5b45a8; --g-study-soft: #ece8f7;
   --g-money: #2b6a33; --g-money-soft: #e3f1e4;
   --g-util: #9a4600;  --g-util-soft: #fbeee2;
+  --g-free: #a3305e;  --g-free-soft: #f8e4ec;
   --warn-ink: #8a3b00; --warn-bg: #fdf1e5;
 }
 :root[data-theme="dark"] {
@@ -1478,6 +1481,7 @@ input[type="date"].inp, input[type="time"].inp { font-variant-numeric: tabular-n
   --g-study: #b9a9f3; --g-study-soft: #28224a;
   --g-money: #8bd394; --g-money-soft: #16341b;
   --g-util: #f2a866;  --g-util-soft: #3a2514;
+  --g-free: #f29bbd;  --g-free-soft: #3b1a28;
   --warn-ink: #ffcf9f; --warn-bg: #33220f;
 }
 .g-doc { --g: var(--g-doc); --g-soft: var(--g-doc-soft); }
@@ -1485,6 +1489,7 @@ input[type="date"].inp, input[type="time"].inp { font-variant-numeric: tabular-n
 .g-study { --g: var(--g-study); --g-soft: var(--g-study-soft); }
 .g-money { --g: var(--g-money); --g-soft: var(--g-money-soft); }
 .g-util { --g: var(--g-util); --g-soft: var(--g-util-soft); }
+.g-free { --g: var(--g-free); --g-soft: var(--g-free-soft); }
 
 kbd { font: 600 11.5px/1 var(--font); font-variant-numeric: tabular-nums; padding: 3px 6px; border-radius: var(--r-sm); border: 1px solid var(--line-strong); border-bottom-width: 2px; background: var(--surface); color: var(--ink-2); white-space: nowrap; }
 button.linkish { background: none; border: 0; padding: 0; font: inherit; cursor: pointer; }
@@ -2718,6 +2723,50 @@ a.of-a:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; bor
   .of-pic { width: 68px; height: 68px; }
   .of-now { font-size: 19px; }
   .of-name { font-size: 15.5px; }
+}
+
+/* Eventi (src/tools/eventi.js): stessi fogli e gruppi delle Offerte (offerte.css), con foto orizzontali e senza prezzi. */
+.ev-sels { display: flex; flex-wrap: wrap; gap: 8px; }
+.ev-sels .inp { min-height: 42px; width: auto; min-width: 0; border-radius: var(--pill); padding-left: 16px; font-size: var(--fs-sm); }
+.ev-gsub { display: block; margin-top: 1px; font: 500 var(--fs-sm)/1.3 var(--font); color: var(--ink-3); }
+.ev-page .of-gh { align-items: center; }
+
+.ev-a { display: grid; grid-template-columns: 128px minmax(0, 1fr); gap: 4px 16px; align-items: center; padding: 14px 0;
+  color: inherit; text-decoration: none; transition: opacity var(--t-fast) var(--ease); }
+a.ev-a:hover .ev-t { color: var(--accent-text); }
+a.ev-a:active { opacity: .7; }
+a.ev-a:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: var(--r); }
+
+/* foto 4:3 come le pubblica ticino.ch; il riquadro resta anche se la foto manca */
+.ev-pic { position: relative; display: grid; place-items: center; width: 128px; aspect-ratio: 4 / 3; border-radius: var(--r); background: var(--surface-3); overflow: hidden; }
+.ev-pic img { position: relative; z-index: 1; width: 100%; height: 100%; object-fit: cover; }
+.ev-pic-ph { position: absolute; width: 26px; height: 26px; color: var(--ink-3); opacity: .6; }
+.ev-top { position: absolute; z-index: 2; left: 5px; bottom: 5px; display: inline-flex; align-items: center; gap: 3px; padding: 2px 6px 2px 5px; border-radius: var(--r-sm);
+  background: var(--g-free, #a3305e); color: #fff; font: 700 11px/1.3 var(--font); white-space: nowrap; box-shadow: 0 1px 3px rgba(16, 41, 59, .3); }
+:root[data-theme="dark"] .ev-top { background: #a3305e; }
+.ev-top .i { width: 11px; height: 11px; fill: currentColor; }
+
+.ev-main { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.ev-when { font-size: var(--fs-xs); font-weight: 600; color: var(--g-free, var(--accent-text)); letter-spacing: .01em; font-variant-numeric: tabular-nums; }
+.ev-off { margin-left: 8px; padding: 1px 6px; border-radius: var(--r-sm); background: var(--del-bg); color: var(--del-ink); font-weight: 700; }
+.ev-t { font-size: var(--fs-md); font-weight: 600; line-height: 1.35; color: var(--ink); overflow-wrap: anywhere; transition: color var(--t-fast) var(--ease);
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.ev-t.off { text-decoration: line-through; color: var(--ink-3); }
+.ev-where { display: flex; align-items: flex-start; gap: 4px; font-size: var(--fs-xs); line-height: 1.4; color: var(--ink-2); }
+.ev-where .i { flex: none; width: 13px; height: 13px; margin-top: 2px; color: var(--ink-3); }
+.ev-cats { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 2px; }
+.ev-cats span { padding: 1px 7px; border-radius: var(--pill); background: var(--surface-3); color: var(--ink-2); font-size: 11.5px; font-weight: 600; }
+
+@media (max-width: 640px) {
+  .ev-sels { width: 100%; }
+  .ev-sels .inp { flex: 1 1 0; }
+  .ev-a { grid-template-columns: 104px minmax(0, 1fr); gap: 4px 12px; padding: 12px 0; align-items: start; }
+  .ev-pic { width: 104px; }
+  /* sul telefono la foto è piccola: del bollino resta la stella */
+  .ev-top { padding: 4px; border-radius: 50%; }
+  .ev-top span { display: none; }
+  .ev-top .i { width: 12px; height: 12px; }
+  .ev-t { font-size: 15.5px; }
 }
 
 </style>
@@ -21535,8 +21584,10 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
     ['doc', 'Documenti', 'Tutto sui PDF, confronti e conversioni'],
     ['work', 'Lavoro', 'Fatture, offerte, ore, lettere e curriculum'],
     ['study', 'Studio', 'Orario, scadenze, ripasso, voti e testi'],
-    ['money', 'Finanze', 'Budget, spese, imposte, calcoli svizzeri e offerte'],
-    ['util', 'Utilità', 'Calcolatori, generatori e metro']
+    ['money', 'Finanze', 'Budget, spese, imposte e calcoli svizzeri'],
+    ['util', 'Utilità', 'Calcolatori, generatori e metro'],
+    /* solo nella versione online: offerte ed eventi arrivano ogni giorno dal sito dell'app */
+    ['free', 'Tempo libero', 'Eventi in Ticino e offerte della settimana']
   ];
   /* Raccolte: un solo riquadro nel menu per strumenti affini. Ogni strumento resta un suo indirizzo
      (#/fattura, #/preventivo…) e sopra compare la barra con le sezioni della raccolta. */
@@ -21557,8 +21608,9 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
     doc: ['pdf', 'confronta', 'convertitore'],
     work: ['fatture', 'ore', 'scrivi', 'cv'],
     study: ['orario', 'planner', 'flashcard', 'pomodoro', 'voti', 'testo'],
-    money: ['budget', 'notaspese', 'imposte', 'calcoli', 'offerte'],
-    util: ['calcolatori', 'generatori', 'metro']
+    money: ['budget', 'notaspese', 'imposte', 'calcoli'],
+    util: ['calcolatori', 'generatori', 'metro'],
+    free: ['eventi', 'offerte']
   };
   /* Strumenti confluiti nel PDF: i vecchi indirizzi aprono la sezione giusta. */
   const ALIAS = { firma: 'pdf/firma', moduli: 'pdf/moduli', ocr: 'pdf/converti', anonimizza: 'pdf/proteggi' };
@@ -21686,7 +21738,7 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
   function todayItems() {
     const items = [];
     for (const t of tools.values()) if (t.today) for (const it of safe(() => t.today(), []) || []) items.push({ icon: t.icon, group: t.group, ...it });
-    const hasData = store.keys().some((k) => !/^ht-(theme|recent|pins|seen|lastBackup|backupSnooze|migr3|hub-|msgs|deals)/.test(k));
+    const hasData = store.keys().some((k) => !/^ht-(theme|recent|pins|seen|lastBackup|backupSnooze|migr3|hub-|msgs|deals|events)/.test(k));
     const last = store.get('ht-lastBackup');
     const snooze = Number(store.get('ht-backupSnooze') || 0);
     const age = last ? Math.floor((Date.now() - new Date(last).getTime()) / DAY) : null;
@@ -21728,7 +21780,7 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
   const entryOf = (id) => hubs.get(id) || tools.get(id);
 
   let homeQuery = '';
-  const GROUP_ICONS = { doc: 'file', work: 'invoice', study: 'cards', money: 'chf', util: 'wand' };
+  const GROUP_ICONS = { doc: 'file', work: 'invoice', study: 'cards', money: 'chf', util: 'wand', free: 'calendar' };
   const phoneMQ = matchMedia('(max-width: 640px)');
   let openGroup = null;
   phoneMQ.addEventListener('change', () => { if (!$('#t-home').hidden) renderHome(); });
@@ -21949,11 +22001,12 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
   }
 
   /* ----------------------------- versione e novità ----------------------------- */
-  const VERSION = '3.5';
+  const VERSION = '3.6';
   /* solo le novità dell'ultimo aggiornamento: le versioni precedenti restano nella storia del progetto */
   const NEWS = [
-    ['Offerte di Lidl e Aldi', 'Nuova pagina «Offerte» (in Finanze): le azioni della settimana di Lidl e Aldi, con prezzo, prezzo barrato e sconto. Cerchi un prodotto, scegli il negozio e guardi quelle valide oggi o in arrivo; tocchi un prodotto per aprirlo sul sito del negozio.'],
-    ['Ogni giorno all\'apertura', 'La prima volta che apri l\'app nella giornata vedi subito le offerte. Se preferisci il menu, togli la spunta in fondo alla pagina Offerte.']
+    ['Eventi in Ticino', 'Nuova pagina «Eventi»: concerti, mostre, mercati, feste e sagre in tutto il Ticino, dall\'elenco ufficiale di Ticino Turismo. Scegli oggi, il weekend o i prossimi 7 giorni, la tua zona e il tipo di evento; tocchi un evento per i dettagli.'],
+    ['Eventi di oggi nel menu', 'Nella striscia «Oggi» del menu vedi quanti eventi ci sono oggi nella zona che hai scelto: un tocco e li hai davanti.'],
+    ['Nuovo gruppo «Tempo libero»', 'Eventi e Offerte ora stanno insieme nel gruppo «Tempo libero» del menu.']
   ];
   const news = {
     show() {
@@ -21975,7 +22028,7 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
       const seen = store.get('ht-seenVersion');
       if (seen === VERSION) return;
       /* al primo avvio in assoluto non c'è nulla di «nuovo» da raccontare */
-      if (!seen && !store.keys().some((k) => !/^ht-(theme|recent|pins|seenVersion|migr3|hub-|msgs|deals)/.test(k))) { store.set('ht-seenVersion', VERSION); return; }
+      if (!seen && !store.keys().some((k) => !/^ht-(theme|recent|pins|seenVersion|migr3|hub-|msgs|deals|events)/.test(k))) { store.set('ht-seenVersion', VERSION); return; }
       setTimeout(() => news.show(), 400);
     }
   };
@@ -22097,8 +22150,8 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
   /* ----------------------------- backup ----------------------------- */
   function backup() {
     const data = {};
-    /* le offerte scaricate si riprendono dal sito: non servono nel backup */
-    for (const k of store.keys()) if (k !== 'ht-deals-data') data[k] = store.get(k);
+    /* offerte ed eventi scaricati si riprendono dal sito: non servono nel backup */
+    for (const k of store.keys()) if (k !== 'ht-deals-data' && k !== 'ht-events-data') data[k] = store.get(k);
     const blob = new Blob([JSON.stringify({ app: 'HelpfulTool', version: 1, saved: new Date().toISOString(), data }, null, 1)], { type: 'application/json' });
     download(blob, `HelpfulTool_backup_${today()}.json`);
     store.set('ht-lastBackup', new Date().toISOString());
@@ -35099,11 +35152,263 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
   window.addEventListener('online', () => check(true));
 
   HT.register({
-    id: 'offerte', title: 'Offerte', group: 'money', icon: 'tag', desc: 'Le azioni della settimana di Lidl e Aldi', keywords: 'offerte azioni sconti spesa lidl aldi promozioni volantino',
+    id: 'offerte', title: 'Offerte', group: 'free', icon: 'tag', desc: 'Le azioni della settimana di Lidl e Aldi', keywords: 'offerte azioni sconti spesa lidl aldi promozioni volantino',
     actions: [{ label: 'Offerte di Lidl e Aldi', keywords: 'offerte azioni sconti spesa lidl aldi', href: '#/offerte' }],
     mount(node) { el = node; },
     show() { HT.store.set(K_DAY, HT.today()); draw(); check(false); },
     reload() { data = null; if (el && !el.hidden) draw(); }
+  });
+})(typeof self !== 'undefined' ? self : this);
+
+</script>
+<script>/* eventi */
+/* HelpfulTool — Eventi: cosa succede in Ticino oggi, nel weekend e nei prossimi giorni. Solo nella versione per
+   telefono pubblicata online (window.HT_EVENTS, scritto da tools/phone.mjs): ogni giorno un lavoro su GitHub
+   (tools/events.mjs) legge l'elenco ufficiale di Ticino Turismo e scrive events.json nel sito dell'app; qui si
+   legge solo quel file, senza inviare nulla.
+   Formato: { updated, error?, items: [{ id, title, from: "AAAA-MM-GG", to, city, place, zone, cats: [], top?, off?, img, url }] } */
+(function (root) {
+  'use strict';
+  const HT = root.HT;
+  const SRC = root.HT_EVENTS;
+  if (!SRC) return;
+  const { h, icon } = HT;
+  const K_DATA = 'ht-events-data', K_CHECK = 'ht-events-check', K_OPT = 'ht-events-opt';
+  const EVERY = 60 * 60000;
+  const PAGE = 6;
+  /* oltre due settimane è una mostra o una rassegna: va nel gruppo «In corso», non in un giorno preciso */
+  const LONG = 14;
+  let el = null, busy = false, lastTry = 0, offline = false;
+  const view = { when: 'week', q: '' };
+  const opened = new Set();
+
+  const ZONES = [['', 'Tutto il Ticino'], ['lugano', 'Lugano e dintorni'], ['locarno', 'Locarno e valli'], ['bellinzona', 'Bellinzona e valli'], ['mendrisio', 'Mendrisiotto']];
+  const CATS = [['', 'Tutti i tipi'], ['musica', 'Musica'], ['cultura', 'Cultura e spettacoli'], ['mostre', 'Mostre'], ['tradizioni', 'Feste e tradizioni'],
+    ['mercati', 'Mercati'], ['gastronomia', 'Gastronomia'], ['sport', 'Sport'], ['natura', 'Natura'], ['visite', 'Visite guidate'], ['festival', 'Festival']];
+  const CAT_NAME = Object.fromEntries(CATS);
+  const ZONE_IN = { '': 'in Ticino', lugano: 'nel Luganese', locarno: 'nel Locarnese', bellinzona: 'nel Bellinzonese', mendrisio: 'nel Mendrisiotto' };
+
+  /* Solo testo e link https verso ticino.ch: il contenuto non diventa mai HTML. */
+  const str = (v, max) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
+  const isDay = (v) => /^\d{4}-\d{2}-\d{2}$/.test(v || '');
+  const URL_OK = /^https:\/\/www\.ticino\.ch\//;
+  const IMG = /^https:\/\/cdn\.sanity\.io\//;
+  const span = (a, b) => Math.round((HT.parseIso(b) - HT.parseIso(a)) / HT.DAY);
+  function clean(e) {
+    if (!e || typeof e !== 'object' || !isDay(e.from)) return null;
+    const out = { id: str(e.id, 40), title: str(e.title, 200), from: e.from, to: isDay(e.to) && e.to >= e.from ? e.to : e.from,
+      city: str(e.city, 60), place: str(e.place, 100), zone: ZONE_IN[e.zone] && e.zone ? e.zone : '',
+      cats: (Array.isArray(e.cats) ? e.cats : []).filter((c) => CAT_NAME[c] && c), top: e.top === true, off: str(e.off, 80),
+      img: IMG.test(e.img || '') ? e.img : '', url: URL_OK.test(e.url || '') ? e.url : '' };
+    if (!out.id || !out.title) return null;
+    out.long = span(out.from, out.to) > LONG;
+    out.q = HT.fold([out.title, out.city, out.place, ...out.cats.map((c) => CAT_NAME[c])].join(' '));
+    return out;
+  }
+  let data = null;
+  const load = () => {
+    if (!data) {
+      const raw = HT.store.json(K_DATA, null);
+      data = raw ? { updated: str(raw.updated, 30), error: !!raw.error, items: (Array.isArray(raw.items) ? raw.items : []).slice(0, 3000).map(clean).filter(Boolean) } : null;
+    }
+    return data;
+  };
+  const opt = () => ({ zone: '', cat: '', ...HT.store.json(K_OPT, {}) });
+  const setOpt = (k, v) => { const o = opt(); o[k] = v; HT.store.put(K_OPT, o); };
+
+  async function check(force) {
+    if (busy || (!force && Date.now() - lastTry < EVERY)) return false;
+    busy = true; lastTry = Date.now();
+    try {
+      /* il parametro cambia ogni ora: la copia in cache del sito non ritarda gli eventi del giorno */
+      const r = await fetch(`${SRC}?h=${Math.floor(Date.now() / 3600000)}`, { cache: 'no-store' });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const j = await r.json();
+      offline = false;
+      HT.store.set(K_CHECK, new Date().toISOString());
+      if (j && j.updated !== (load() || {}).updated) { HT.store.put(K_DATA, j); data = null; }
+      if (el && !el.hidden) draw();
+      return true;
+    } catch (e) {
+      offline = true;
+      if (el && !el.hidden) draw();
+      return false;
+    } finally { busy = false; }
+  }
+
+  /* ----------------------------- date ----------------------------- */
+  const WD = ['domenica', 'lunedì', 'martedì', 'mercoledì', 'giovedì', 'venerdì', 'sabato'];
+  const MO = ['gennaio', 'febbraio', 'marzo', 'aprile', 'maggio', 'giugno', 'luglio', 'agosto', 'settembre', 'ottobre', 'novembre', 'dicembre'];
+  const dm = (iso) => { const d = HT.parseIso(iso); return `${d.getDate()}.${d.getMonth() + 1}.`; };
+  const longDay = (iso) => { const d = HT.parseIso(iso); return `${WD[d.getDay()]} ${d.getDate()} ${MO[d.getMonth()]}`; };
+  /* il periodo scelto: [primo giorno, ultimo giorno] */
+  function range() {
+    const t = HT.today();
+    if (view.when === 'today') return [t, t];
+    if (view.when === 'weekend') {
+      const wd = HT.parseIso(t).getDay();
+      if (wd === 0) return [t, t];
+      if (wd === 6) return [t, HT.addDays(t, 1)];
+      const sat = HT.addDays(t, 6 - wd);
+      return [sat, HT.addDays(sat, 1)];
+    }
+    if (view.when === 'week') return [t, HT.addDays(t, 6)];
+    return [t, HT.addDays(t, 60)];
+  }
+  function when(e) {
+    const t = HT.today();
+    if (e.from === e.to) return e.from === t ? 'oggi' : `${WD[HT.parseIso(e.from).getDay()]} ${dm(e.from)}`;
+    if (e.from <= t) return e.to === t ? 'ultimo giorno oggi' : `fino al ${dm(e.to)}`;
+    return `dal ${dm(e.from)} al ${dm(e.to)}`;
+  }
+
+  /* ----------------------------- elenco ----------------------------- */
+  function rows() {
+    const d = load();
+    if (!d) return [];
+    const o = opt();
+    const [a, b] = range();
+    const words = HT.fold(view.q.trim()).split(/\s+/).filter(Boolean);
+    return d.items.filter((e) => e.from <= b && e.to >= a
+      && (!o.zone || e.zone === o.zone)
+      && (!o.cat || e.cats.includes(o.cat))
+      && (!words.length || words.every((w) => e.q.includes(w))));
+  }
+  /* un gruppo per giorno (dal primo giorno del periodo in poi); mostre e rassegne lunghe tutte insieme in fondo */
+  function groups(list) {
+    const [a] = range();
+    const t = HT.today();
+    const map = new Map();
+    for (const e of list) {
+      const key = e.long ? 'long' : e.from < a ? a : e.from;
+      if (!map.has(key)) map.set(key, []);
+      map.get(key).push(e);
+    }
+    const order = (e) => (e.off ? 2 : e.top ? 0 : 1);
+    return [...map.entries()]
+      .sort(([x], [y]) => (x === 'long') - (y === 'long') || x.localeCompare(y))
+      .map(([key, items]) => ({
+        key,
+        title: key === 'long' ? 'Mostre e rassegne in corso' : key === t ? 'Oggi' : key === HT.addDays(t, 1) ? 'Domani' : longDay(key),
+        sub: key === 'long' || key === t || key === HT.addDays(t, 1) ? (key === 'long' ? '' : longDay(key)) : '',
+        items: items.sort((x, y) => order(x) - order(y) || x.title.localeCompare(y.title, 'it'))
+      }));
+  }
+
+  function row(e) {
+    const where = [e.place, e.city].filter(Boolean).join(', ');
+    const pic = h('span', { class: 'ev-pic', 'aria-hidden': 'true' },
+      e.img ? h('img', { src: e.img, alt: '', loading: 'lazy', decoding: 'async', referrerpolicy: 'no-referrer', onerror: (x) => x.target.remove() }) : null,
+      icon('calendar', 'ev-pic-ph'),
+      e.top && !e.off ? h('span', { class: 'ev-top' }, icon('star'), h('span', null, 'Da non perdere')) : null);
+    const body = [
+      pic,
+      h('span', { class: 'ev-main' },
+        h('span', { class: 'ev-when' }, when(e), e.top && !e.off ? h('span', { class: 'sr-only' }, ' · da non perdere') : null, e.off ? h('span', { class: 'ev-off' }, e.off) : null),
+        h('span', { class: 'ev-t' + (e.off ? ' off' : '') }, e.title),
+        where ? h('span', { class: 'ev-where' }, icon('pin'), where) : null,
+        e.cats.length ? h('span', { class: 'ev-cats' }, e.cats.slice(0, 2).map((c) => h('span', null, CAT_NAME[c]))) : null)
+    ];
+    return h('li', { class: 'of-it ev-it' }, e.url
+      ? h('a', { class: 'ev-a', href: e.url, target: '_blank', rel: 'noopener noreferrer', title: 'Apri su ticino.ch' }, ...body)
+      : h('div', { class: 'ev-a' }, ...body));
+  }
+
+  function status() {
+    const d = load();
+    const last = HT.store.get(K_CHECK);
+    const parts = [];
+    if (offline) parts.push('Senza rete: vedi gli eventi già scaricati.');
+    if (d && d.updated) {
+      const u = new Date(d.updated);
+      parts.push(`Eventi aggiornati ${u.toDateString() === new Date().toDateString() ? 'oggi' : 'il ' + u.toLocaleDateString('it-CH')} alle ${u.toLocaleTimeString('it-CH', { hour: '2-digit', minute: '2-digit' })}.`);
+    } else if (!offline) parts.push(last ? 'Nessun evento disponibile per ora.' : 'Scarico gli eventi…');
+    return parts.join(' ');
+  }
+
+  let searchFocus = false;
+  function draw() {
+    const d = load();
+    const o = opt();
+    const list = rows();
+    const gs = groups(list);
+    const search = h('input', { type: 'search', class: 'inp', id: 'evQ', placeholder: 'Cerca: concerto, castagne, Lugano…', value: view.q, autocomplete: 'off', 'aria-label': 'Cerca un evento' });
+    search.addEventListener('input', HT.debounce(() => { view.q = search.value; searchFocus = true; draw(); }, 200));
+    const sel = (id, label, options, value, key) => {
+      const s = h('select', { class: 'inp msel', id, 'aria-label': label }, options.map(([v, l]) => h('option', { value: v, selected: v === value || null }, l)));
+      s.addEventListener('change', () => { setOpt(key, s.value); draw(); const again = document.getElementById(id); if (again) again.focus(); });
+      return s;
+    };
+    const n = list.length;
+    const [a, b] = range();
+    const period = view.when === 'today' ? 'oggi' : view.when === 'weekend' ? `nel weekend (${dm(a)}–${dm(b)})` : view.when === 'week' ? 'nei prossimi 7 giorni' : 'nei prossimi due mesi';
+
+    el.replaceChildren(h('div', { class: 'tool-wrap of-page ev-page' },
+      HT.toolHead('Eventi', 'Concerti, mostre, mercati e feste in Ticino. Tocca un evento per i dettagli su ticino.ch.',
+        HT.btn('Aggiorna', async () => { HT.toast('Aggiorno gli eventi…'); if (await check(true)) HT.toast('Eventi aggiornati'); }, { cls: 'sm', icon: 'refresh' })),
+      h('p', { class: 'msg-status', role: 'status' }, status()),
+      d && d.error ? HT.msg('warn', 'L\'elenco di Ticino Turismo non ha risposto all\'ultimo controllo: vedi gli eventi letti prima.') : null,
+      d ? h('div', { class: 'of-bar' },
+        h('div', { class: 'of-search' }, icon('search'), search),
+        h('div', { class: 'of-filters' },
+          HT.seg('evWhen', [['today', 'Oggi'], ['weekend', 'Weekend'], ['week', '7 giorni'], ['all', 'Tutti']], view.when, (v) => { view.when = v; draw(); }, 'Quando'),
+          h('div', { class: 'ev-sels' },
+            sel('evZone', 'Zona', ZONES, o.zone, 'zone'),
+            sel('evCat', 'Tipo di evento', CATS, o.cat, 'cat')))) : null,
+      /* stesso conto della striscia «Oggi» del menu: le mostre lunghe a parte */
+      d ? h('p', { class: 'of-count', 'aria-live': 'polite' }, n ? (() => {
+        const lg = list.filter((e) => e.long).length, k = n - lg;
+        const main = k ? `${k} ${k === 1 ? 'evento' : 'eventi'} ${period}` : `Nessun evento in un giorno preciso ${period}`;
+        return lg ? `${main}, più ${lg} ${lg === 1 ? 'mostra o rassegna' : 'mostre e rassegne'} in corso` : main;
+      })() : '') : null,
+      gs.length ? h('div', { class: 'of-groups' }, gs.map((g) => {
+        /* poche righe per gruppo; con una ricerca si vede tutto quello che corrisponde */
+        const long = g.items.length > PAGE + 2 && !view.q;
+        const more = long && !opened.has(g.key);
+        const gid = 'evg-' + g.key;
+        return h('section', { class: 'of-group', id: gid, 'aria-label': g.title + (g.sub ? ', ' + g.sub : '') },
+          h('h3', { class: 'of-gh' }, h('span', { class: 'of-gt' }, g.title, g.sub ? h('span', { class: 'ev-gsub' }, g.sub) : null), h('span', { class: 'of-gn' }, String(g.items.length))),
+          h('ul', { class: 'of-list ev-list', role: 'list' }, (more ? g.items.slice(0, PAGE) : g.items).map(row)),
+          long ? h('button', { type: 'button', class: 'of-more', 'aria-expanded': more ? 'false' : 'true', onclick: () => {
+            if (more) opened.add(g.key); else opened.delete(g.key);
+            draw();
+            /* chiudendo si torna al titolo del gruppo, non in fondo a un elenco sparito */
+            const sec = document.getElementById(gid);
+            if (sec) { if (!more) sec.scrollIntoView({ block: 'start' }); const btn = sec.querySelector('.of-more'); if (btn) btn.focus({ preventScroll: true }); }
+          } }, more ? `Mostra altri ${g.items.length - PAGE}` : 'Mostra meno', icon(more ? 'down' : 'up')) : null);
+      })) : h('p', { class: 'empty-teach big' }, !d
+        ? (offline ? 'Gli eventi arrivano quando il telefono è collegato a Internet.' : 'Scarico gli eventi…')
+        : view.q ? `Nessun evento per «${view.q}» ${period}.` : `Nessun evento ${period} con questi filtri. Prova «Tutti» o un'altra zona.`),
+      h('div', { class: 'of-foot' },
+        h('p', null, 'Eventi dall\'elenco ufficiale di Ticino Turismo (ticino.ch), letto una volta al giorno. Orari, prezzi e possibili cambiamenti sono sulla pagina di ogni evento.'))));
+    if (searchFocus) { searchFocus = false; const q = document.getElementById('evQ'); if (q) { q.focus(); q.setSelectionRange(q.value.length, q.value.length); } }
+  }
+
+  HT.ready(() => setTimeout(() => check(true), 900));
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') check(false); });
+  window.addEventListener('online', () => check(true));
+
+  HT.register({
+    id: 'eventi', title: 'Eventi', group: 'free', icon: 'calendar', desc: 'Concerti, mostre, mercati e feste in Ticino', keywords: 'eventi ticino concerti mostre mercati feste sagre weekend cosa fare',
+    actions: [{ label: 'Eventi in Ticino', keywords: 'eventi concerti mostre mercati feste weekend', href: '#/eventi' }],
+    mount(node) { el = node; },
+    show() {
+      /* dalla striscia «Oggi» del menu (#/eventi/oggi) si apre già sul giorno */
+      if (/^#\/eventi\/oggi/.test(location.hash)) { view.when = 'today'; history.replaceState(null, '', '#/eventi'); }
+      draw(); check(false);
+    },
+    reload() { data = null; if (el && !el.hidden) draw(); },
+    /* nella striscia «Oggi» del menu: quanti eventi ci sono oggi nella zona scelta (senza le mostre lunghe) */
+    today() {
+      const d = load();
+      if (!d) return [];
+      const t = HT.today();
+      const o = opt();
+      const list = d.items.filter((e) => !e.long && !e.off && e.from <= t && e.to >= t && (!o.zone || e.zone === o.zone))
+        .sort((x, y) => (y.top === true) - (x.top === true));
+      if (!list.length) return [];
+      return [{ text: `${list.length} ${list.length === 1 ? 'evento' : 'eventi'} oggi ${ZONE_IN[o.zone] || 'in Ticino'}`, sub: list.slice(0, 2).map((e) => e.title).join(' · '), href: '#/eventi/oggi', icon: 'calendar' }];
+    }
   });
 })(typeof self !== 'undefined' ? self : this);
 

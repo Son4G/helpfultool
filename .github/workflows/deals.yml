@@ -1,4 +1,4 @@
-name: Offerte
+name: Offerte ed eventi
 on:
   schedule:
     - cron: '20 4 * * *'
@@ -16,12 +16,15 @@ jobs:
         with:
           node-version: 22
       - run: node .github/deals.mjs deals.json
-      - name: Salva deals.json
+        continue-on-error: true
+      - run: node .github/events.mjs events.json
+        continue-on-error: true
+      - name: Salva i file
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add deals.json
+          git add deals.json events.json
           git diff --cached --quiet && exit 0
-          git commit -m "Offerte: Lidl e Aldi"
+          git commit -m "Offerte ed eventi del giorno"
           for i in 1 2 3; do git pull --rebase && git push && exit 0; sleep 5; done
           exit 1
