@@ -2651,7 +2651,8 @@ html.metro-on, html.metro-on body { overflow: hidden; overscroll-behavior: none;
 .of-count { margin: 8px 0 0; color: var(--ink-3); font-size: var(--fs-sm); font-variant-numeric: tabular-nums; min-height: 1.4em; }
 
 .of-group { margin-top: 26px; }
-.of-gh { position: sticky; top: var(--topbar-h); z-index: 1; display: flex; align-items: baseline; gap: 10px; margin: 0; padding: 10px 0 9px;
+/* la barra in alto scorre via con la pagina: il titolo del gruppo resta attaccato al bordo dello schermo */
+.of-gh { position: sticky; top: 0; z-index: 1; display: flex; align-items: baseline; gap: 10px; margin: 0; padding: 10px 0 9px;
   background: var(--bg); border-bottom: 1px solid var(--line-strong); font: 700 var(--fs-md)/1.35 var(--font-head); color: var(--ink); }
 .of-gt { flex: 1; min-width: 0; text-wrap: balance; }
 .of-gn { color: var(--ink-3); font: 600 var(--fs-sm)/1 var(--font); font-variant-numeric: tabular-nums; }
