@@ -2657,7 +2657,7 @@ html.metro-on, html.metro-on body { overflow: hidden; overscroll-behavior: none;
 
 .of-group { margin-top: 30px; }
 /* la barra in alto scorre via con la pagina: il titolo del gruppo resta attaccato al bordo dello schermo */
-.of-gh { position: sticky; top: 0; z-index: 1; display: flex; align-items: baseline; gap: 10px; margin: 0; padding: 10px 0 9px;
+.of-gh { position: sticky; top: 0; z-index: 5; display: flex; align-items: baseline; gap: 10px; margin: 0; padding: 10px 0 9px;
   background: var(--bg); border-bottom: 1px solid var(--line-strong); font: 700 var(--fs-md)/1.35 var(--font-head); color: var(--ink); }
 .of-gt { flex: 1; min-width: 0; text-wrap: balance; }
 .of-gn { color: var(--ink-3); font: 600 var(--fs-sm)/1 var(--font); font-variant-numeric: tabular-nums; }
@@ -2676,7 +2676,8 @@ a.of-a:active { opacity: .7; }
 a.of-a:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: var(--r); }
 
 /* foto: sempre su fondo bianco (le foto dei negozi lo hanno), anche nel tema scuro */
-.of-pic { position: relative; display: grid; place-items: center; width: 84px; height: 84px; border-radius: var(--r); background: #fff; border: 1px solid var(--line); overflow: hidden; }
+/* isolation: foto e bollino restano dentro il riquadro e scorrono sotto il titolo del gruppo */
+.of-pic { position: relative; isolation: isolate; display: grid; place-items: center; width: 84px; height: 84px; border-radius: var(--r); background: #fff; border: 1px solid var(--line); overflow: hidden; }
 .of-pic img { position: relative; z-index: 1; width: 100%; height: 100%; object-fit: contain; padding: 5px; box-sizing: border-box; }
 .of-pic-ph { position: absolute; width: 26px; height: 26px; color: #b4c6d6; }
 .of-pic .of-pct { position: absolute; z-index: 2; left: 4px; bottom: 4px; padding: 2px 6px; border-radius: var(--r-sm); background: var(--ins-line); color: #fff;
@@ -2738,7 +2739,7 @@ a.ev-a:active { opacity: .7; }
 a.ev-a:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: var(--r); }
 
 /* foto 4:3 come le pubblica ticino.ch; il riquadro resta anche se la foto manca */
-.ev-pic { position: relative; display: grid; place-items: center; width: 128px; aspect-ratio: 4 / 3; border-radius: var(--r); background: var(--surface-3); overflow: hidden; }
+.ev-pic { position: relative; isolation: isolate; display: grid; place-items: center; width: 128px; aspect-ratio: 4 / 3; border-radius: var(--r); background: var(--surface-3); overflow: hidden; }
 .ev-pic img { position: relative; z-index: 1; width: 100%; height: 100%; object-fit: cover; }
 .ev-pic-ph { position: absolute; width: 26px; height: 26px; color: var(--ink-3); opacity: .6; }
 .ev-top { position: absolute; z-index: 2; left: 5px; bottom: 5px; display: inline-flex; align-items: center; gap: 3px; padding: 2px 6px 2px 5px; border-radius: var(--r-sm);

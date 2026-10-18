@@ -1,4 +1,4 @@
-const CACHE = 'helpfultool-78b80c21f31f';
+const CACHE = 'helpfultool-91d1c0c6ca2d';
 const FILES = ['index.html', 'manifest.webmanifest', 'icon-180.png', 'icon-192.png', 'icon-512.png'];
 
 self.addEventListener('install', (e) => {
